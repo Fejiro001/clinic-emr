@@ -32,9 +32,9 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Set up Tailwind CSS, React Hook Form, Zod
 - [x] Install all packages (better-sqlite3, axios, nanoid, etc.)
 - [x] Configure ESLint, Prettier, TypeScript
-- [ ] Initialize Git repository and .env.local
-- [ ] Set up electron-rebuild for native modules (better-sqlite3)
-- [ ] Create Electron IPC architecture skeleton
+- [x] Initialize Git repository and .env.local
+- [x] Set up electron-rebuild for native modules (better-sqlite3)
+- [x] Create Electron IPC architecture skeleton
 
 ### 1.2 Supabase & Security Setup (Week 1-2)
 - [ ] Create Supabase project
