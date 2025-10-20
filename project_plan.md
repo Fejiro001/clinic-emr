@@ -1,9 +1,11 @@
 # Clinic EMR - Detailed Development Plan (Revised)
 
 ## Project Overview
+
 A cross-platform desktop EMR system for managing patient data across clinic computers with offline-first synchronization. This plan focuses on building a Solid Foundation (Version 1.0) with all core features, security, data integrity, and robust sync engine included from the start.
 
 ## Tech Stack (Final - Complete)
+
 - **Desktop Framework:** Electron
 - **Frontend UI:** React + Tailwind CSS
 - **State Management:** Zustand (global UI state)
@@ -15,7 +17,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - **ORM:** sql template literals with better-sqlite3
 - **Build Tools:** Vite, Electron Builder
 - **Language:** TypeScript (for type safety)
-- **Utilities:** 
+- **Utilities:**
   - `nanoid` (UUID generation)
   - `axios` (HTTP client)
   - `electron.safeStorage` (password encryption)
@@ -28,6 +30,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 ## Phase 1: Solid Foundation (10-12 weeks) - REVISED
 
 ### 1.1 Project Setup (Week 1)
+
 - [x] Initialize Electron + React + TypeScript with Vite
 - [x] Set up Tailwind CSS, React Hook Form, Zod
 - [x] Install all packages (better-sqlite3, axios, nanoid, etc.)
@@ -37,16 +40,18 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Create Electron IPC architecture skeleton
 
 ### 1.2 Supabase & Security Setup (Week 1-2)
-- [ ] Create Supabase project
-- [ ] Create all database tables with proper constraints
-- [ ] Create database indexes (phone, DOB, dates)
-- [ ] Define and test all RLS policies for each role
-- [ ] Create PostgreSQL triggers for audit logs
+
+- [x] Create Supabase project
+- [x] Create all database tables with proper constraints
+- [x] Create database indexes (phone, DOB, dates)
+- [x] Define and test all RLS policies for each role
+- [x] Create PostgreSQL triggers for audit logs
 - [ ] Create sync_conflicts and sync_queue tables (PostgreSQL side)
 - [ ] Test RLS policies (log in as different roles, verify access)
-- [ ] Create API keys and configure .env
+- [x] Create API keys and configure .env.local
 
 ### 1.3 Local Database & Migrations (Week 2)
+
 - [ ] Set up SQLite in Electron (better-sqlite3)
 - [ ] Create migration system for SQLite and Supabase
 - [ ] Create migration files (schema, indexes, soft deletes)
@@ -54,6 +59,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Create migration runner that auto-runs on startup
 
 ### 1.4 Authentication & Session Management (Week 2)
+
 - [ ] Build login page with email/password
 - [ ] Integrate Supabase Auth
 - [ ] Implement role-based route protection
@@ -64,6 +70,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Add Electron safeStorage for token encryption
 
 ### 1.5 Network Detection & Offline State (Week 3)
+
 - [ ] Create Electron IPC handler for network status
 - [ ] Set up Zustand store for offline mode
 - [ ] Add online/offline event listeners
@@ -71,6 +78,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test network transitions (online → offline → online)
 
 ### 1.6 Sync Queue & Batching (Week 3)
+
 - [ ] Create SQLite sync_queue table (local)
 - [ ] Build write queue system for offline operations
 - [ ] Implement batched IPC queries (renderer → main → SQLite)
@@ -79,6 +87,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test batching performance
 
 ### 1.7 Conflict Detection & Resolution (Week 4)
+
 - [ ] Define CONFLICT_RULES for each table (as above)
 - [ ] Implement conflict detection logic (version/timestamp comparison)
 - [ ] Create sync_conflicts table queries
@@ -87,6 +96,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test conflict scenarios (edit same field offline, sync, resolve)
 
 ### 1.8 Retry Logic & Exponential Backoff (Week 4)
+
 - [ ] Implement retry counter in sync_queue
 - [ ] Calculate exponential backoff (2^n seconds, max 5 min)
 - [ ] Implement automatic retry on app startup if failed syncs exist
@@ -94,6 +104,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test retry scenarios (network timeout, server error, then recovery)
 
 ### 1.9 Patient Registry (Week 5)
+
 - [ ] Create patient registry list page (view/search only)
 - [ ] Implement pagination (infinite scroll, 50 items/page)
 - [ ] Build search by name/phone/DOB
@@ -103,6 +114,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test with 1000+ test patients
 
 ### 1.10 Inpatient Management (Week 5-6)
+
 - [ ] Create inpatient admission form (2 sections: patient + admission)
 - [ ] Implement duplicate patient detection (phone/name+DOB)
 - [ ] Implement auto-create patient if not exists
@@ -114,6 +126,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test conflict scenarios during sync
 
 ### 1.11 Outpatient Management (Week 6-7)
+
 - [ ] Create outpatient visit form (2 sections: patient + visit)
 - [ ] Implement duplicate patient detection
 - [ ] Implement auto-create patient if not exists
@@ -124,6 +137,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test visit immutability (can't edit after creation)
 
 ### 1.12 Outpatient → Inpatient Conversion (Week 7)
+
 - [ ] Implement "Admit" button on outpatient visits
 - [ ] Pre-populate inpatient form with patient data
 - [ ] Copy diagnosis to provisional diagnosis
@@ -132,6 +146,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Verify audit log captures both records
 
 ### 1.13 Patient Timeline & History (Week 8)
+
 - [ ] Build unified chronological timeline view
 - [ ] Show all inpatient admissions (with discharge status)
 - [ ] Show all outpatient visits
@@ -140,6 +155,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Test with patient having 100+ visits
 
 ### 1.14 Audit Logs & Compliance (Week 9)
+
 - [ ] Verify PostgreSQL triggers auto-log all changes
 - [ ] Build audit log viewer (admin only)
 - [ ] Show: user, action, timestamp, old/new data
@@ -148,6 +164,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Verify soft deletes create audit entries
 
 ### 1.15 Dashboard (Week 10)
+
 - [ ] Create stats cards (total patients, admitted, visits today)
 - [ ] Implement metrics that auto-update (React Query)
 - [ ] Add conversion metrics widget
@@ -155,6 +172,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Ensure stats update in real-time when data changes
 
 ### 1.16 Documentation & Deployment (Week 11)
+
 - [ ] Create user guides for each role (Doctor, Secretary, Nurse)
 - [ ] Write deployment guide for clinic IT
 - [ ] Create installer (Windows, Mac, Linux)
@@ -163,6 +181,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Create video tutorial for staff
 
 ### 1.17 Comprehensive Testing (Week 12)
+
 - [ ] Test offline workflows (admission, visit, no internet)
 - [ ] Test sync scenarios (conflicts, retries, batching)
 - [ ] Test RLS policies (logged in as each role)
@@ -303,61 +322,83 @@ clinic-emr/
 
 ```json
 {
-  "name": "clinic-emr",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "dist-electron/main.js",
+  "name": "celian_clinic_emr",
+  "author": "Abere Oghenefejiro",
+  "private": true,
+  "version": "0.0.0",
+  "main": "dist-electron/electron/main.js",
   "homepage": "./",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "electron:start": "wait-on tcp:5173 && set VITE_DEV_SERVER_URL=http://localhost:5173/ && electron .",
+    "electron:main-watch": "tsc -w -p tsconfig.electron.json",
+    "electron-dev": "concurrently \"npm run dev\" \"npm run electron:main-watch\" \"npm run electron:start\"",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
     "electron": "wait-on tcp:5173 && electron .",
-    "electron-dev": "concurrently \"npm run dev\" \"npm run electron\"",
+    "build": "npm run rebuild && tsc -p tsconfig.electron.json && vite build",
     "electron-build": "npm run build && electron-builder",
-    "db:migrate": "node src/db/migrations.ts",
-    "lint": "eslint src --ext .ts,.tsx",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "type-check": "tsc --noEmit"
+    "lint": "eslint .",
+    "format": "eslint . --fix",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.51.3",
-    "zod": "^3.22.4",
-    "@hookform/resolvers": "^3.3.4",
-    "@tanstack/react-query": "^5.36.1",
-    "@tanstack/react-table": "^8.17.3",
-    "@supabase/supabase-js": "^2.38.8",
-    "zustand": "^4.4.7",
-    "axios": "^1.6.7",
-    "nanoid": "^4.0.2",
-    "better-sqlite3": "^9.2.2",
-    "prisma": "^5.8.0",
-    "@prisma/client": "^5.8.0",
-    "framer-motion": "^10.16.16",
-    "tailwindcss": "^3.4.1",
-    "electron": "^27.2.0",
-    "electron-store": "^8.1.0",
-    "electron-builder": "^24.6.4"
+    "@hookform/resolvers": "^5.2.2",
+    "@supabase/supabase-js": "^2.75.1",
+    "@tailwindcss/vite": "^4.1.14",
+    "@tanstack/react-query": "^5.90.5",
+    "@tanstack/react-table": "^8.21.3",
+    "axios": "^1.12.2",
+    "better-sqlite3": "^12.4.1",
+    "electron-is-dev": "^3.0.1",
+    "electron-store": "^11.0.2",
+    "nanoid": "^5.1.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.65.0",
+    "tailwindcss": "^4.1.14",
+    "zod": "^4.1.12",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "@types/better-sqlite3": "^7.6.8",
-    "@types/node": "^20.10.6",
-    "vite": "^5.1.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "postcss": "^8.4.32",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.56.0",
-    "@typescript-eslint/eslint-plugin": "^6.17.0",
-    "@typescript-eslint/parser": "^6.17.0",
-    "prettier": "^3.11.0",
-    "concurrently": "^8.2.2",
-    "wait-on": "^7.2.0",
-    "@electron/rebuild": "^3.5.0"
+    "@electron/rebuild": "^4.0.1",
+    "@eslint/js": "^9.36.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "electron": "^38.3.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.22",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.45.0",
+    "vite": "^7.1.7",
+    "wait-on": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.celianclinic.clinicemr",
+    "productName": "Clinic EMR",
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "node_modules/better-sqlite3/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
 ```
@@ -377,62 +418,76 @@ export async function detectDuplicatePatient(newPatient: {
 }) {
   // Check 1: Exact phone match (most reliable)
   const phoneMatch = await supabase
-    .from('patients')
-    .select('id')
-    .eq('phone', newPatient.phone)
-    .is('deleted_at', null)
+    .from("patients")
+    .select("id")
+    .eq("phone", newPatient.phone)
+    .is("deleted_at", null)
     .single();
 
   if (phoneMatch) {
-    return { duplicate: true, reason: 'phone_match', existingId: phoneMatch.id };
+    return {
+      duplicate: true,
+      reason: "phone_match",
+      existingId: phoneMatch.id,
+    };
   }
 
   // Check 2: Name + DOB match (strong indicator)
   const nameMatch = await supabase
-    .from('patients')
-    .select('id')
-    .eq('surname', newPatient.surname)
-    .eq('other_names', newPatient.other_names)
-    .eq('date_of_birth', newPatient.date_of_birth)
-    .is('deleted_at', null)
+    .from("patients")
+    .select("id")
+    .eq("surname", newPatient.surname)
+    .eq("other_names", newPatient.other_names)
+    .eq("date_of_birth", newPatient.date_of_birth)
+    .is("deleted_at", null)
     .single();
 
   if (nameMatch) {
-    return { duplicate: true, reason: 'name_dob_match', existingId: nameMatch.id };
+    return {
+      duplicate: true,
+      reason: "name_dob_match",
+      existingId: nameMatch.id,
+    };
   }
 
   // Check 3: Fuzzy match on surname (optional, catch typos)
   // Could use postgres extension or client-side library
-  
+
   return { duplicate: false };
 }
 
 export async function createOrGetPatient(patientData: PatientInput) {
   const duplicateCheck = await detectDuplicatePatient(patientData);
-  
+
   if (duplicateCheck.duplicate) {
     // Return existing patient
     const existing = await supabase
-      .from('patients')
-      .select('*')
-      .eq('id', duplicateCheck.existingId)
+      .from("patients")
+      .select("*")
+      .eq("id", duplicateCheck.existingId)
       .single();
-    
-    return { patient: existing, isNew: false, duplicateReason: duplicateCheck.reason };
+
+    return {
+      patient: existing,
+      isNew: false,
+      duplicateReason: duplicateCheck.reason,
+    };
   }
-  
+
   // Create new patient
   const newPatient = await supabase
-    .from('patients')
-    .insert([{
-      ...patientData,
-      created_by: currentUserId,
-      updated_by: currentUserId,
-      version: 1
-    }])
+    .from("patients")
+    .insert([
+      {
+        ...patientData,
+        created_by: currentUserId,
+        updated_by: currentUserId,
+        version: 1,
+      },
+    ])
     .select()
     .single();
-  
+
   return { patient: newPatient, isNew: true };
 }
 ```
@@ -446,33 +501,58 @@ export async function createOrGetPatient(patientData: PatientInput) {
 
 export async function createPatientOffline(patientData: PatientInput) {
   const db = getDatabase(); // SQLite
-  
+
   // Check for existing patient locally first
-  const existing = db.prepare(`
+  const existing = db
+    .prepare(
+      `
     SELECT id FROM patients 
     WHERE phone = ? OR (surname = ? AND other_names = ? AND date_of_birth = ?)
     AND deleted_at IS NULL
-  `).get(patientData.phone, patientData.surname, patientData.other_names, patientData.date_of_birth);
-  
+  `
+    )
+    .get(
+      patientData.phone,
+      patientData.surname,
+      patientData.other_names,
+      patientData.date_of_birth
+    );
+
   if (existing) {
     return { patient: existing, isNew: false, duplicate: true };
   }
-  
+
   // Create locally
   const patientId = nanoid();
-  db.prepare(`
+  db.prepare(
+    `
     INSERT INTO patients (
       id, surname, other_names, date_of_birth, phone, created_by, updated_by, version
     ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-  `).run(patientId, patientData.surname, patientData.other_names, patientData.date_of_birth, patientData.phone, userId, userId);
-  
+  `
+  ).run(
+    patientId,
+    patientData.surname,
+    patientData.other_names,
+    patientData.date_of_birth,
+    patientData.phone,
+    userId,
+    userId
+  );
+
   // Add to sync queue
-  db.prepare(`
+  db.prepare(
+    `
     INSERT INTO sync_queue (table_name, record_id, operation, data, status)
     VALUES (?, ?, 'insert', ?, 'pending')
-  `).run('patients', patientId, JSON.stringify(patientData));
-  
-  return { patient: { id: patientId, ...patientData }, isNew: true, duplicate: false };
+  `
+  ).run("patients", patientId, JSON.stringify(patientData));
+
+  return {
+    patient: { id: patientId, ...patientData },
+    isNew: true,
+    duplicate: false,
+  };
 }
 ```
 
@@ -485,34 +565,38 @@ export async function createPatientOffline(patientData: PatientInput) {
 
 export async function syncAllChanges() {
   if (!isOnline) {
-    console.log('Offline, sync will happen when online');
+    console.log("Offline, sync will happen when online");
     return;
   }
 
   try {
     // Get all pending items from local queue
-    const pending = db.prepare(`
+    const pending = db
+      .prepare(
+        `
       SELECT * FROM sync_queue 
       WHERE status IN ('pending', 'failed')
       ORDER BY created_at ASC
       LIMIT 50
-    `).all();
+    `
+      )
+      .all();
 
     if (pending.length === 0) {
-      updateSyncStatus('synced');
+      updateSyncStatus("synced");
       return;
     }
 
-    updateSyncStatus('syncing');
+    updateSyncStatus("syncing");
 
     // Batch send to server
-    const response = await axios.post('/api/sync/batch', {
-      items: pending.map(item => ({
+    const response = await axios.post("/api/sync/batch", {
+      items: pending.map((item) => ({
         table: item.table_name,
         operation: item.operation,
         id: item.record_id,
-        data: JSON.parse(item.data)
-      }))
+        data: JSON.parse(item.data),
+      })),
     });
 
     // Handle response item by item
@@ -528,20 +612,24 @@ export async function syncAllChanges() {
             record_id: item.record_id,
             local_version: JSON.parse(item.data),
             remote_version: result.remoteVersion,
-            conflict_type: result.conflictType
+            conflict_type: result.conflictType,
           });
 
-          db.prepare(`
+          db.prepare(
+            `
             UPDATE sync_queue SET status = 'conflict'
             WHERE id = ?
-          `).run(item.id);
+          `
+          ).run(item.id);
         } else {
           // Update local record with server version
-          db.prepare(`
+          db.prepare(
+            `
             UPDATE ${item.table_name}
             SET version = ?, updated_at = ?, synced_at = ?
             WHERE id = ?
-          `).run(
+          `
+          ).run(
             result.version,
             result.updated_at,
             new Date().toISOString(),
@@ -549,21 +637,25 @@ export async function syncAllChanges() {
           );
 
           // Mark as synced
-          db.prepare(`
+          db.prepare(
+            `
             UPDATE sync_queue SET status = 'synced', synced_at = ?
             WHERE id = ?
-          `).run(Date.now(), item.id);
+          `
+          ).run(Date.now(), item.id);
         }
       } else {
         // Sync failed
         const retryCount = (item.retry_count || 0) + 1;
         const backoffTime = Math.min(Math.pow(2, retryCount) * 1000, 300000); // Max 5 mins
 
-        db.prepare(`
+        db.prepare(
+          `
           UPDATE sync_queue 
           SET status = 'failed', retry_count = ?, last_retry_at = ?, error_message = ?
           WHERE id = ?
-        `).run(retryCount, Date.now() + backoffTime, result.error, item.id);
+        `
+        ).run(retryCount, Date.now() + backoffTime, result.error, item.id);
       }
     }
 
@@ -571,36 +663,43 @@ export async function syncAllChanges() {
     if (pending.length === 50) {
       await syncAllChanges();
     } else {
-      updateSyncStatus('synced');
+      updateSyncStatus("synced");
     }
   } catch (error) {
-    updateSyncStatus('error');
-    console.error('Sync error:', error);
+    updateSyncStatus("error");
+    console.error("Sync error:", error);
   }
 }
 
-export async function resolveConflict(conflictId: string, choice: 'local' | 'remote') {
+export async function resolveConflict(
+  conflictId: string,
+  choice: "local" | "remote"
+) {
   const conflict = await supabase
-    .from('sync_conflicts')
-    .select('*')
-    .eq('id', conflictId)
+    .from("sync_conflicts")
+    .select("*")
+    .eq("id", conflictId)
     .single();
 
-  if (choice === 'remote') {
+  if (choice === "remote") {
     // Update local record with remote version
-    db.prepare(`
+    db.prepare(
+      `
       UPDATE ${conflict.table_name}
-      SET ${Object.keys(conflict.remote_version).map(k => `${k} = ?`).join(', ')}
+      SET ${Object.keys(conflict.remote_version)
+        .map((k) => `${k} = ?`)
+        .join(", ")}
       WHERE id = ?
-    `).run(...Object.values(conflict.remote_version), conflict.record_id);
+    `
+    ).run(...Object.values(conflict.remote_version), conflict.record_id);
   }
   // If choice === 'local', keep local as is
 
   // Mark as resolved
   await supabase
-    .from('sync_conflicts')
+    .from("sync_conflicts")
     .update({ resolved: true, resolution_choice: choice, resolved_by: userId })
-    .eq('id', conflictId);
+    .eq("id", conflictId);
 
   // Retry sync
   await syncAllChanges();
@@ -612,25 +711,26 @@ export async function resolveConflict(conflictId: string, choice: 'local' | 'rem
 ## Key Implementation Details
 
 ### 1. Transactional Safety (Offline)
+
 ```typescript
 // When creating patient + visit offline:
 export async function createVisitWithPatient(patientData, visitData) {
   const db = getDatabase();
-  
+
   try {
     db.prepare('BEGIN TRANSACTION').run();
-    
+
     const patientId = nanoid();
     // Insert patient
     db.prepare('INSERT INTO patients (...) VALUES (...)').run(...);
-    
+
     // Insert visit
     db.prepare('INSERT INTO outpatient_visits (...) VALUES (...)').run(...);
-    
+
     // Add both to sync queue
     db.prepare('INSERT INTO sync_queue (...) VALUES (...)').run(...);
     db.prepare('INSERT INTO sync_queue (...) VALUES (...)').run(...);
-    
+
     db.prepare('COMMIT').run();
     return { patientId, visitId };
   } catch (error) {
@@ -641,6 +741,7 @@ export async function createVisitWithPatient(patientData, visitData) {
 ```
 
 ### 2. Audit Log Triggers (PostgreSQL)
+
 ```sql
 CREATE OR REPLACE FUNCTION audit_trigger()
 RETURNS TRIGGER AS $
@@ -650,7 +751,7 @@ BEGIN
     VALUES (auth.uid(), 'insert', TG_TABLE_NAME, NEW.id, row_to_json(NEW), NOW());
   ELSIF TG_OP = 'UPDATE' THEN
     INSERT INTO audit_logs (user_id, action, table_name, record_id, old_data, new_data, changes, timestamp)
-    VALUES (auth.uid(), 'update', TG_TABLE_NAME, NEW.id, row_to_json(OLD), row_to_json(NEW), 
+    VALUES (auth.uid(), 'update', TG_TABLE_NAME, NEW.id, row_to_json(OLD), row_to_json(NEW),
             jsonb_object_agg(key, value) FROM each(hstore(NEW) - hstore(OLD)), NOW());
   ELSIF TG_OP = 'DELETE' THEN
     INSERT INTO audit_logs (user_id, action, table_name, record_id, old_data, timestamp)
@@ -709,10 +810,10 @@ CREATE TRIGGER inpatient_records_audit AFTER INSERT OR UPDATE OR DELETE ON inpat
 
 ---
 
-
 ## Database Schema (Supabase PostgreSQL - COMPLETE)
 
 ### Users Table
+
 ```sql
 id (UUID, PK)
 email (unique)
@@ -724,6 +825,7 @@ updated_at (TIMESTAMPTZ)
 ```
 
 ### Patients Table
+
 ```sql
 id (UUID, PK)
 surname (TEXT, NOT NULL)
@@ -749,12 +851,15 @@ updated_at (TIMESTAMPTZ)
 deleted_at (TIMESTAMPTZ, nullable) -- Soft delete
 synced_at (TIMESTAMPTZ) -- For sync tracking
 -- Indexes for duplicate detection and performance
-UNIQUE INDEX idx_patient_duplicate ON (surname, other_names, date_of_birth)
-INDEX idx_phone ON (phone)
-INDEX idx_created_at ON (created_at DESC)
+UNIQUE INDEX idx_patient_identity ON (surname, other_names, date_of_birth)
+UNIQUE INDEX idx_patient_phone ON (phone)
+INDEX idx_patients_created_at ON (created_at DESC)
+INDEX idx_patients_updated_at ON (updated_at DESC)
+INDEX idx_patients_deleted_at ON (deleted_at)
 ```
 
 ### Inpatient Records Table
+
 ```sql
 id (UUID, PK)
 patient_id (UUID, FK to Patients, NOT NULL)
@@ -776,12 +881,15 @@ updated_at (TIMESTAMPTZ)
 deleted_at (TIMESTAMPTZ, nullable)
 synced_at (TIMESTAMPTZ)
 -- Indexes
-INDEX idx_patient_id ON (patient_id)
-INDEX idx_date_admission ON (date_of_admission DESC)
-INDEX idx_ward ON (ward)
+INDEX idx_inpatient_patient_id ON (patient_id)
+INDEX idx_inpatient_admission_date ON (date_of_admission DESC)
+INDEX idx_inpatient_discharge_date ON (date_of_discharge DESC)
+INDEX idx_inpatient_ward ON (ward)
+INDEX idx_inpatient_consultant ON (consultant_id)
 ```
 
 ### Operations Table
+
 ```sql
 id (UUID, PK)
 inpatient_record_id (UUID, FK to Inpatient Records, NOT NULL)
@@ -797,11 +905,13 @@ updated_at (TIMESTAMPTZ)
 deleted_at (TIMESTAMPTZ, nullable)
 synced_at (TIMESTAMPTZ)
 -- Indexes
-INDEX idx_inpatient_record ON (inpatient_record_id)
-INDEX idx_operation_date ON (operation_date DESC)
+INDEX idx_operations_inpatient ON (inpatient_record_id)
+INDEX idx_operations_date ON (operation_date DESC)
+INDEX idx_operations_doctor ON (doctor_id)
 ```
 
 ### Outpatient Visits Table
+
 ```sql
 id (UUID, PK)
 patient_id (UUID, FK to Patients, NOT NULL)
@@ -821,12 +931,13 @@ updated_at (TIMESTAMPTZ)
 deleted_at (TIMESTAMPTZ, nullable) -- Soft delete (immutable after creation)
 synced_at (TIMESTAMPTZ)
 -- Indexes
-INDEX idx_patient_id ON (patient_id)
-INDEX idx_visit_date ON (visit_date DESC)
-INDEX idx_doctor_id ON (doctor_id)
+INDEX idx_outpatient_patient_id ON (patient_id)
+INDEX idx_outpatient_visit_date ON (visit_date DESC)
+INDEX idx_outpatient_doctor_id ON (doctor_id)
 ```
 
 ### Audit Logs Table (PostgreSQL Triggers Auto-Populate)
+
 ```sql
 id (BIGSERIAL, PK)
 user_id (UUID, FK to Users)
@@ -839,11 +950,14 @@ changes (JSONB, nullable) -- Only changed fields
 timestamp (TIMESTAMPTZ DEFAULT NOW())
 synced (BOOLEAN DEFAULT FALSE) -- For local offline audit logs
 -- Index for querying
-INDEX idx_timestamp ON (timestamp DESC)
-INDEX idx_table_record ON (table_name, record_id)
+INDEX idx_audit_timestamp ON (timestamp DESC)
+INDEX idx_audit_table_record ON (table_name, record_id)
+INDEX idx_audit_user ON (user_id)
+INDEX idx_audit_action ON (action)
 ```
 
 ### Sync Conflicts Table (For Resolution)
+
 ```sql
 id (BIGSERIAL, PK)
 table_name (TEXT)
@@ -857,10 +971,12 @@ resolved_by (UUID, FK to Users, nullable)
 resolved_at (TIMESTAMPTZ, nullable)
 timestamp (TIMESTAMPTZ DEFAULT NOW())
 -- Index
-INDEX idx_resolved ON (resolved)
+INDEX idx_sync_conflicts_resolved ON (resolved)
+INDEX idx_sync_conflicts_table ON (table_name, record_id)
 ```
 
 ### Sync Queue Table (Local SQLite Only)
+
 ```sql
 id (INTEGER, PK)
 table_name (TEXT NOT NULL)
@@ -883,6 +999,7 @@ INDEX idx_retry ON (status, retry_count)
 ## Row Level Security (RLS) Policies (Supabase)
 
 ### Patients Table
+
 ```sql
 -- Doctors and Secretaries can read all patients
 CREATE POLICY "read_patients" ON patients
@@ -891,7 +1008,7 @@ FOR SELECT USING (true);
 -- Only creators can update their own patient records (unless admin)
 CREATE POLICY "update_patients" ON patients
 FOR UPDATE USING (
-  auth.uid() = created_by OR 
+  auth.uid() = created_by OR
   (SELECT role FROM users WHERE id = auth.uid()) = 'admin'
 );
 
@@ -907,6 +1024,7 @@ FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
 ```
 
 ### Inpatient Records Table
+
 ```sql
 -- Doctors and Secretaries can read all inpatient records
 CREATE POLICY "read_inpatient" ON inpatient_records
@@ -927,6 +1045,7 @@ FOR INSERT WITH CHECK (
 ```
 
 ### Outpatient Visits Table
+
 ```sql
 -- All staff can read outpatient visits
 CREATE POLICY "read_outpatient" ON outpatient_visits
@@ -947,6 +1066,7 @@ FOR INSERT WITH CHECK (
 ```
 
 ### Audit Logs Table
+
 ```sql
 -- Admins can read audit logs
 CREATE POLICY "read_audit_logs" ON audit_logs
@@ -964,6 +1084,7 @@ FOR INSERT WITH CHECK (true);
 ## Conflict Resolution Strategy (Per Table)
 
 ### Patients Table Conflicts
+
 ```javascript
 // If phone changed locally and remotely: prefer remote (secretary is authoritative)
 // If name changed locally and remotely: flag for review (name is important)
@@ -971,35 +1092,37 @@ FOR INSERT WITH CHECK (true);
 
 CONFLICT_RULES = {
   patients: {
-    phone: 'prefer_remote',      // Secretary is authoritative
-    name: 'flag_for_review',     // Important, needs human decision
-    address: 'prefer_recent',    // By updated_at timestamp
-    email: 'prefer_local',       // User's current entry
-  }
-}
+    phone: "prefer_remote", // Secretary is authoritative
+    name: "flag_for_review", // Important, needs human decision
+    address: "prefer_recent", // By updated_at timestamp
+    email: "prefer_local", // User's current entry
+  },
+};
 ```
 
 ### Inpatient Records Conflicts
+
 ```javascript
 CONFLICT_RULES = {
   inpatient_records: {
-    prov_diagnosis: 'flag_for_review',  // Clinical decision
-    final_diagnosis: 'flag_for_review', // Clinical decision
-    ward: 'prefer_remote',               // Admin is authoritative
-    date_of_discharge: 'prefer_recent',  // Most recent is correct
-  }
-}
+    prov_diagnosis: "flag_for_review", // Clinical decision
+    final_diagnosis: "flag_for_review", // Clinical decision
+    ward: "prefer_remote", // Admin is authoritative
+    date_of_discharge: "prefer_recent", // Most recent is correct
+  },
+};
 ```
 
 ### Outpatient Visits Conflicts
+
 ```javascript
 CONFLICT_RULES = {
   outpatient_visits: {
-    diagnosis: 'flag_for_review',  // Clinical decision
-    treatment: 'flag_for_review',  // Clinical decision
-    history: 'prefer_recent',      // Latest notes are best
-  }
-}
+    diagnosis: "flag_for_review", // Clinical decision
+    treatment: "flag_for_review", // Clinical decision
+    history: "prefer_recent", // Latest notes are best
+  },
+};
 ```
 
 ---
@@ -1007,18 +1130,20 @@ CONFLICT_RULES = {
 ## Sync Engine Architecture
 
 ### Phase 1: Network Detection (IPC Handler)
+
 ```javascript
 // electron/ipc/network.js
-ipcMain.on('get-online-status', (event) => {
-  event.reply('online-status', navigator.onLine);
+ipcMain.on("get-online-status", (event) => {
+  event.reply("online-status", navigator.onLine);
 });
 
 // Listen for network changes
-window.addEventListener('online', () => store.setState({ isOnline: true }));
-window.addEventListener('offline', () => store.setState({ isOnline: false }));
+window.addEventListener("online", () => store.setState({ isOnline: true }));
+window.addEventListener("offline", () => store.setState({ isOnline: false }));
 ```
 
 ### Phase 2: Sync Queue Management (SQLite)
+
 ```javascript
 // When user creates/updates a record offline:
 1. Save to local SQLite
@@ -1032,6 +1157,7 @@ POST /api/sync/batch { items: pendingItems }
 ```
 
 ### Phase 3: Conflict Detection & Resolution
+
 ```javascript
 // On sync response:
 1. Check if server version.updated_at !== local version.updated_at
@@ -1050,6 +1176,7 @@ POST /api/sync/batch { items: pendingItems }
 ```
 
 ### Phase 4: Retry Logic with Exponential Backoff
+
 ```javascript
 // Failed sync attempt
 if (syncError) {
@@ -1070,33 +1197,43 @@ if (syncError) {
 ## IPC Communication Architecture
 
 ### Batched Database Queries (Renderer → Main)
+
 ```javascript
 // Instead of individual queries, batch them:
 
 // ❌ BAD: Multiple IPC calls
-ipcRenderer.invoke('db:query', 'SELECT * FROM patients WHERE id = ?', [id1]);
-ipcRenderer.invoke('db:query', 'SELECT * FROM patients WHERE id = ?', [id2]);
-ipcRenderer.invoke('db:query', 'SELECT * FROM patients WHERE id = ?', [id3]);
+ipcRenderer.invoke("db:query", "SELECT * FROM patients WHERE id = ?", [id1]);
+ipcRenderer.invoke("db:query", "SELECT * FROM patients WHERE id = ?", [id2]);
+ipcRenderer.invoke("db:query", "SELECT * FROM patients WHERE id = ?", [id3]);
 
 // ✅ GOOD: Single batched call
-ipcRenderer.invoke('db:batch-query', [
-  { table: 'patients', query: 'SELECT * WHERE id = ?', params: [id1] },
-  { table: 'inpatient_records', query: 'SELECT * WHERE patient_id = ?', params: [id1] },
-  { table: 'outpatient_visits', query: 'SELECT * WHERE patient_id = ?', params: [id1] },
-])
+ipcRenderer.invoke("db:batch-query", [
+  { table: "patients", query: "SELECT * WHERE id = ?", params: [id1] },
+  {
+    table: "inpatient_records",
+    query: "SELECT * WHERE patient_id = ?",
+    params: [id1],
+  },
+  {
+    table: "outpatient_visits",
+    query: "SELECT * WHERE patient_id = ?",
+    params: [id1],
+  },
+]);
 ```
 
 ### IPC Handler Architecture
+
 ```javascript
 // electron/ipc/database.js
-ipcMain.handle('db:batch-query', async (event, queries) => {
-  const results = queries.map(q => {
+ipcMain.handle("db:batch-query", async (event, queries) => {
+  const results = queries.map((q) => {
     return db.prepare(q.query).all(...q.params);
   });
   return results;
 });
 
-ipcMain.handle('db:write', async (event, table, operation, data) => {
+ipcMain.handle("db:write", async (event, table, operation, data) => {
   // insert, update, or delete
   // Returns result + error handling
 });
@@ -1107,50 +1244,53 @@ ipcMain.handle('db:write', async (event, table, operation, data) => {
 ## Data Validation Layers
 
 ### Layer 1: Frontend (React Hook Form + Zod)
+
 ```javascript
 const patientSchema = z.object({
   surname: z.string().min(1, "Surname required"),
   other_names: z.string().min(1, "Other names required"),
   date_of_birth: z.date(),
-  gender: z.enum(['male', 'female']),
+  gender: z.enum(["male", "female"]),
   phone: z.string().regex(/^\d{10,}$/, "Valid phone required"),
   email: z.string().email().optional(),
 });
 ```
 
 ### Layer 2: Backend (Supabase/PostgreSQL)
+
 ```sql
 -- NOT NULL constraints
 ALTER TABLE patients ALTER COLUMN surname SET NOT NULL;
 
 -- UNIQUE constraints
 ALTER TABLE patients ADD CONSTRAINT unique_phone UNIQUE(phone);
-ALTER TABLE patients ADD CONSTRAINT unique_patient_identity 
+ALTER TABLE patients ADD CONSTRAINT unique_patient_identity
   UNIQUE(surname, other_names, date_of_birth);
 
 -- FOREIGN KEY constraints
-ALTER TABLE inpatient_records ADD CONSTRAINT fk_patient 
+ALTER TABLE inpatient_records ADD CONSTRAINT fk_patient
   FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE;
 ```
 
 ### Layer 3: Business Logic (Service Layer)
+
 ```javascript
 // services/patients.js
 export async function createPatient(data) {
   // Validate with Zod
   const validated = patientSchema.parse(data);
-  
+
   // Check for duplicates
   const existing = await supabase
-    .from('patients')
-    .select('*')
-    .eq('phone', validated.phone)
+    .from("patients")
+    .select("*")
+    .eq("phone", validated.phone)
     .single();
-  
+
   if (existing) throw new DuplicatePatientError();
-  
+
   // Insert
-  return supabase.from('patients').insert([validated]);
+  return supabase.from("patients").insert([validated]);
 }
 ```
 
@@ -1159,6 +1299,7 @@ export async function createPatient(data) {
 ## Database Indexes (Performance)
 
 ### Patients Table
+
 ```sql
 -- For duplicate detection (most critical)
 CREATE UNIQUE INDEX idx_patient_phone ON patients(phone) WHERE deleted_at IS NULL;
@@ -1170,6 +1311,7 @@ CREATE INDEX idx_patients_updated_at ON patients(updated_at DESC);
 ```
 
 ### Inpatient Records Table
+
 ```sql
 CREATE INDEX idx_inpatient_patient_id ON inpatient_records(patient_id);
 CREATE INDEX idx_inpatient_admission_date ON inpatient_records(date_of_admission DESC);
@@ -1178,6 +1320,7 @@ CREATE INDEX idx_inpatient_consultant ON inpatient_records(consultant_id);
 ```
 
 ### Outpatient Visits Table
+
 ```sql
 CREATE INDEX idx_outpatient_patient_id ON outpatient_visits(patient_id);
 CREATE INDEX idx_outpatient_visit_date ON outpatient_visits(visit_date DESC);
@@ -1189,6 +1332,7 @@ CREATE INDEX idx_outpatient_doctor_id ON outpatient_visits(doctor_id);
 ## Database Migration System
 
 ### Migration Files (SQLite + PostgreSQL)
+
 ```
 migrations/
 ├── 001_initial_schema.sql
@@ -1199,25 +1343,29 @@ migrations/
 ```
 
 ### Migration Runner (on app startup)
+
 ```javascript
 // src/db/migrations.js
 export async function runMigrations() {
   const db = getDatabase();
-  const appliedMigrations = db.prepare('SELECT name FROM migrations').all();
-  
-  const files = fs.readdirSync('./migrations').filter(f => f.endsWith('.sql'));
-  
+  const appliedMigrations = db.prepare("SELECT name FROM migrations").all();
+
+  const files = fs
+    .readdirSync("./migrations")
+    .filter((f) => f.endsWith(".sql"));
+
   for (const file of files) {
-    if (!appliedMigrations.find(m => m.name === file)) {
-      const sql = fs.readFileSync(`./migrations/${file}`, 'utf8');
+    if (!appliedMigrations.find((m) => m.name === file)) {
+      const sql = fs.readFileSync(`./migrations/${file}`, "utf8");
       db.exec(sql);
-      db.prepare('INSERT INTO migrations (name) VALUES (?)').run(file);
+      db.prepare("INSERT INTO migrations (name) VALUES (?)").run(file);
     }
   }
 }
 ```
 
 ### For Supabase (PostgreSQL)
+
 ```javascript
 // Run migrations via Supabase dashboard or CLI:
 // supabase migration up
@@ -1228,19 +1376,20 @@ export async function runMigrations() {
 ## Pagination Strategy
 
 ### For Large Datasets
+
 ```javascript
 // Don't load ALL 10,000 patients at once
 // Instead:
 
 // 1. On app startup: Load first 100 recently updated patients
-SELECT * FROM patients 
-WHERE deleted_at IS NULL 
-ORDER BY updated_at DESC 
+SELECT * FROM patients
+WHERE deleted_at IS NULL
+ORDER BY updated_at DESC
 LIMIT 100;
 
 // 2. User searches: Load only search results (with limit)
-SELECT * FROM patients 
-WHERE phone LIKE ? OR surname LIKE ? 
+SELECT * FROM patients
+WHERE phone LIKE ? OR surname LIKE ?
 LIMIT 50;
 
 // 3. Infinite scroll on patient list:
@@ -1264,6 +1413,7 @@ const { data, fetchNextPage } = useInfiniteQuery({
 ## Soft Delete Strategy
 
 ### Implementation
+
 ```sql
 -- All delete operations become updates:
 UPDATE patients SET deleted_at = NOW() WHERE id = ?;
@@ -1276,21 +1426,19 @@ SELECT * FROM patients WHERE deleted_at IS NOT NULL; -- See deleted records
 ```
 
 ### In Code
+
 ```javascript
 // Instead of DELETE
 async function deletePatient(patientId) {
   return supabase
-    .from('patients')
+    .from("patients")
     .update({ deleted_at: new Date() })
-    .eq('id', patientId);
+    .eq("id", patientId);
 }
 
 // Queries always filter out deleted
 const getPatients = () => {
-  return supabase
-    .from('patients')
-    .select('*')
-    .is('deleted_at', null);
+  return supabase.from("patients").select("*").is("deleted_at", null);
 };
 ```
 
@@ -1299,13 +1447,16 @@ const getPatients = () => {
 ## Session Management & Security
 
 ### Supabase Auth Session
+
 ```javascript
 // On app start:
-const { data: { session } } = await supabase.auth.getSession();
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 
 if (!session) {
   // Redirect to login
-  navigate('/login');
+  navigate("/login");
 } else {
   // Check session expiry
   if (session.expires_at < Date.now() / 1000) {
@@ -1316,37 +1467,42 @@ if (!session) {
 ```
 
 ### Password Encryption (Electron)
+
 ```javascript
 // Save token securely:
-import { safeStorage } from 'electron';
+import { safeStorage } from "electron";
 
-ipcMain.handle('save-token', (event, token) => {
+ipcMain.handle("save-token", (event, token) => {
   const encrypted = safeStorage.encryptString(token);
-  store.set('auth-token', encrypted); // Using electron-store
+  store.set("auth-token", encrypted); // Using electron-store
 });
 
-ipcMain.handle('get-token', (event) => {
-  const encrypted = store.get('auth-token');
+ipcMain.handle("get-token", (event) => {
+  const encrypted = store.get("auth-token");
   return safeStorage.decryptString(encrypted);
 });
 ```
 
 ### Session Timeout
+
 ```javascript
 // Auto-logout after 30 minutes of inactivity
 let inactivityTimer;
 
 const resetInactivityTimer = () => {
   clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(() => {
-    supabase.auth.signOut();
-    navigate('/login');
-  }, 30 * 60 * 1000);
+  inactivityTimer = setTimeout(
+    () => {
+      supabase.auth.signOut();
+      navigate("/login");
+    },
+    30 * 60 * 1000
+  );
 };
 
 // Attach to user events
-window.addEventListener('mousemove', resetInactivityTimer);
-window.addEventListener('keypress', resetInactivityTimer);
+window.addEventListener("mousemove", resetInactivityTimer);
+window.addEventListener("keypress", resetInactivityTimer);
 ```
 
 ---

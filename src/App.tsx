@@ -1,7 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./services/supabase";
 
 function App() {
-  const [status] = useState("Testing...");
+  const [status, setStatus] = useState("Testing...");
+
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const { count, error } = await supabase
+          .from("patients")
+          .select("*", { count: "exact", head: true });
+
+        if (error) throw error;
+
+        const patientCount = count ?? 0;
+        setStatus(
+          `Supabase connected! Patients table ready (${String(patientCount)}) records.`
+        );
+      } catch (err) {
+        setStatus(
+          `Unexpected error: ${err instanceof Error ? err.message : "Unknown error"}`
+        );
+      }
+    };
+
+    void testConnection();
+  }, []);
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

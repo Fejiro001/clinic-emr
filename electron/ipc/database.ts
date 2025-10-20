@@ -5,7 +5,7 @@ interface DbQuery {
   params?: unknown[];
 }
 
-export function setupDatabaseIPC() {
+export function setupDatabaseIPC(): void {
   console.log("Setting up database IPC handlers.");
 
   ipcMain.handle("db:query", (event, sql: string, params?: unknown[]) => {
