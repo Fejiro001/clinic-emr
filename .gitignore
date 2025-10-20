@@ -8,9 +8,13 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
 *.local
+package-lock.json
+yarn.lock
+
+dist
+dist-electron
+dist-ssr
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +26,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*~
+
+# Environment
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Electron
+out/
