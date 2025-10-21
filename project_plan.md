@@ -46,17 +46,17 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Create database indexes (phone, DOB, dates)
 - [x] Define and test all RLS policies for each role
 - [x] Create PostgreSQL triggers for audit logs
-- [ ] Create sync_conflicts and sync_queue tables (PostgreSQL side)
-- [ ] Test RLS policies (log in as different roles, verify access)
+- [x] Create sync_conflicts (PostgreSQL side)
+- [x] Create sync_queue tables (SQLite side)
 - [x] Create API keys and configure .env.local
 
 ### 1.3 Local Database & Migrations (Week 2)
 
-- [ ] Set up SQLite in Electron (better-sqlite3)
-- [ ] Create migration system for SQLite and Supabase
-- [ ] Create migration files (schema, indexes, soft deletes)
-- [ ] Test migrations on fresh install
-- [ ] Create migration runner that auto-runs on startup
+- [x] Set up SQLite in Electron (better-sqlite3)
+- [x] Create migration system for SQLite and Supabase
+- [x] Create migration files (schema, indexes, soft deletes)
+- [x] Test migrations on fresh install
+- [x] Create migration runner that auto-runs on startup
 
 ### 1.4 Authentication & Session Management (Week 2)
 
@@ -68,6 +68,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [ ] Implement logout
 - [ ] Set up 30-minute inactivity timeout
 - [ ] Add Electron safeStorage for token encryption
+- [ ] Test RLS policies (log in as different roles, verify access)
 
 ### 1.5 Network Detection & Offline State (Week 3)
 
@@ -261,11 +262,11 @@ clinic-emr/
 │   │   ├── outpatientStore.ts (Outpatient cache)
 │   │   └── uiStore.ts (Modal state, toasts, loading)
 │   ├── db/
-│   │   ├── sqlite.ts (SQLite initialization)
+│   │   ├── database.ts (SQLite initialization)
 │   │   ├── schema.ts (SQLite schema definitions)
 │   │   ├── migrations.ts (Migration runner)
 │   │   ├── queries.ts (All SQLite queries)
-│   │   └── ipc.ts (IPC communication layer)
+│   │   └── indexes.ts (Create Indexes)
 │   ├── hooks/
 │   │   ├── useAuth.ts (Auth context hook)
 │   │   ├── useSyncStatus.ts (Sync status hook)
@@ -983,7 +984,7 @@ table_name (TEXT NOT NULL)
 record_id (TEXT NOT NULL) -- UUID as TEXT
 operation (TEXT NOT NULL) -- insert, update, delete
 data (JSON NOT NULL) -- Full record for sync
-status (TEXT DEFAULT 'pending') -- pending, syncing, synced, failed
+status (TEXT DEFAULT 'pending') -- pending, syncing, synced, failed, conflict
 retry_count (INTEGER DEFAULT 0)
 last_retry_at (INTEGER) -- Unix timestamp
 error_message (TEXT, nullable)

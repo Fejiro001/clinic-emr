@@ -5,6 +5,8 @@
     "lib": ["ES2022"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "baseUrl": "..",
+    "paths": { "*": ["*", "src/"] },
 
     "types": ["node", "better-sqlite3"],
     "skipLibCheck": true,
@@ -19,8 +21,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "outDir": "dist-electron/electron",
-    "rootDir": "./electron"
+    "outDir": "dist-electron",
+    "rootDir": "."
   },
   "include": ["electron/**/*.ts"],
   "exclude": ["node_modules"]
