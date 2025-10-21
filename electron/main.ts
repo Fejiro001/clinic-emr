@@ -1,9 +1,10 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
 import { setupDatabaseIPC } from "./ipc/database";
+import { initDatabase } from "../src/db/database";
+import { runMigrations } from "../src/db/migrations";
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
-
 const DIST_PATH = path.join(__dirname, "../../dist");
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
@@ -28,11 +29,9 @@ const createWindow = async () => {
   });
 
   if (VITE_DEV_SERVER_URL) {
-    // In development, load the Vite dev server URL.
     await mainWindow.loadURL(VITE_DEV_SERVER_URL);
     mainWindow.webContents.openDevTools();
   } else {
-    // In production, load the built index.html file.
     await mainWindow.loadFile(path.join(DIST_PATH, "index.html"));
   }
 
@@ -45,10 +44,37 @@ const createWindow = async () => {
   });
 };
 
+// Initialize database
+function initializeDatabase() {
+  try {
+    const userDataPath = app.getPath("userData");
+    const dbPath = path.join(userDataPath, "clinic-emr.db");
+
+    console.log("Database path:", dbPath);
+
+    // Initialize SQLite
+    const db = initDatabase(dbPath);
+
+    // Run migrations
+    runMigrations(db);
+
+    console.log("Database ready");
+  } catch (error) {
+    console.error("Database initialization failed", error);
+    throw error;
+  }
+}
+
 app
   .whenReady()
   .then(() => {
+    // First initialize the database
+    initializeDatabase();
+
+    // Setup the IPC handlers
     setupDatabaseIPC();
+
+    // Create window
     void createWindow();
 
     app.on("activate", () => {
