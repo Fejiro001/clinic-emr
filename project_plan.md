@@ -207,7 +207,7 @@ clinic-emr/
 │   ├── components/
 │   │   ├── Layout/
 │   │   │   ├── Sidebar.tsx
-│   │   │   └── TopBar.tsx
+│   │   │   └── Header.tsx
 │   │   ├── Auth/
 │   │   │   └── LoginForm.tsx
 │   │   ├── Patients/
@@ -229,6 +229,10 @@ clinic-emr/
 │   │   │   ├── LoadingSpinner.tsx
 │   │   │   ├── ErrorMessage.tsx
 │   │   │   ├── SyncStatus.tsx
+│   │   │   ├── Toast.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   ├── SearchBar.tsx
+│   │   │   ├── DataTable.tsx
 │   │   │   ├── ConflictResolver.tsx
 │   │   │   └── Pagination.tsx
 │   │   └── Admin/
