@@ -287,6 +287,7 @@ clinic-emr/
 │   │   └── errors.ts (Custom error classes)
 │   ├── types/
 │   │   ├── index.ts (All TypeScript interfaces)
+│   │   ├── db.d.ts (SQLite global types)
 │   │   └── supabase.ts (Generated Supabase types)
 │   ├── App.tsx
 │   ├── index.css
