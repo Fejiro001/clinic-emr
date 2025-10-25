@@ -31,23 +31,16 @@ export class AuthService {
       });
 
       if (error) {
-        console.error("Supabase auth error:", {
-          message: error.message,
-          status: error.status,
-          name: error.name,
-        });
-        throw error;
+        return {
+          success: false,
+          error: error.message || "Invalid email or password",
+        };
       }
-
-      console.log("Auth successful, user ID:", data.user.id);
 
       // Save encrypted token via IPC
       await window.auth.saveToken(data.session.access_token);
 
-      console.log("Fetching profile for user:", data.user.id);
       const profile = await this.getUserProfile(data.user.id);
-
-      console.log("Profile result:", profile);
 
       if (!profile) {
         throw new Error("User profile not found");
@@ -72,8 +65,6 @@ export class AuthService {
    * @returns User profile data or null if not found
    */
   async getUserProfile(userId: string): Promise<UserProfile | null> {
-    console.log("Querying users table for ID:", userId);
-
     const { data, error } = await supabase
       .from("users")
       .select("id, email, full_name, role")
@@ -89,8 +80,6 @@ export class AuthService {
       });
       return null;
     }
-
-    console.log("Profile found:", data);
 
     return data as UserProfile;
   }
@@ -190,26 +179,23 @@ export class AuthService {
       const savedToken = await window.auth.getToken();
 
       if (savedToken) {
-        // Set session with saved token
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.setSession({
+          access_token: savedToken,
+          refresh_token: savedToken, // You should save refresh token too
+        });
 
-        if (!error && session) {
-          const profile = await this.getUserProfile(session.user.id);
+        if (!error && data.session) {
+          const profile = await this.getUserProfile(data.session.user.id);
 
           if (profile) {
-            useAuthStore.getState().setSession(session);
+            useAuthStore.getState().setSession(data.session);
             useAuthStore.getState().setUser(profile);
-
             this.startInactivityTimer();
 
             return { success: true, user: profile };
           }
         }
       }
-
       return { success: false };
     } catch (error) {
       console.error("Session initialization error:", error);

@@ -6,6 +6,7 @@ interface FormInputProps {
   placeholder?: string;
   ref: Ref<HTMLInputElement>;
   disabled?: boolean;
+  autoComplete?: string;
 }
 
 const FormInput = ({
@@ -14,10 +15,20 @@ const FormInput = ({
   placeholder = "",
   ref,
   disabled,
+  autoComplete,
   ...rest
 }: FormInputProps) => {
   return (
-    <input disabled={disabled} id={id} type={type} placeholder={placeholder} {...rest} ref={ref} />
+    <input
+      className="w-full border border-gray-300 p-2 rounded-sm focus:outline-none focus:ring focus:ring-blue-800 disabled:opacity-50"
+      disabled={disabled}
+      id={id}
+      type={type}
+      placeholder={placeholder}
+      {...rest}
+      ref={ref}
+      autoComplete={autoComplete}
+    />
   );
 };
 

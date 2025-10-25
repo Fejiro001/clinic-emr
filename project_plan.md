@@ -60,15 +60,15 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 ### 1.4 Authentication & Session Management (Week 2)
 
-- [ ] Build login page with email/password
-- [ ] Integrate Supabase Auth
-- [ ] Implement role-based route protection
-- [ ] Implement role-based UI component hiding
-- [ ] Set up session refresh logic
-- [ ] Implement logout
-- [ ] Set up 30-minute inactivity timeout
-- [ ] Add Electron safeStorage for token encryption
-- [ ] Test RLS policies (log in as different roles, verify access)
+- [x] Build login page with email/password
+- [x] Integrate Supabase Auth
+- [x] Implement role-based route protection
+- [x] Implement role-based UI component hiding
+- [x] Set up session refresh logic
+- [x] Implement logout
+- [x] Set up 30-minute inactivity timeout
+- [x] Add Electron safeStorage for token encryption
+- [x] Test RLS policies (log in as different roles, verify access)
 
 ### 1.5 Network Detection & Offline State (Week 3)
 
