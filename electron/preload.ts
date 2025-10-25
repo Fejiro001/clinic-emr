@@ -1,4 +1,10 @@
-import { contextBridge, ipcRenderer } from "electron";
+/* eslint-disable @typescript-eslint/no-require-imports */
+import type { IpcRenderer, ContextBridge } from "electron";
+
+const { contextBridge, ipcRenderer } = require("electron") as {
+  contextBridge: ContextBridge;
+  ipcRenderer: IpcRenderer;
+};
 
 contextBridge.exposeInMainWorld("db", {
   query: <T = unknown>(sql: string, params?: unknown[]) =>
@@ -21,4 +27,12 @@ contextBridge.exposeInMainWorld("db", {
       success: boolean;
       count: number;
     }>,
+});
+
+contextBridge.exposeInMainWorld("auth", {
+  // Auth methods
+  saveToken: (token: string) => ipcRenderer.invoke("auth:save-token", token),
+  getToken: () => ipcRenderer.invoke("auth:get-token"),
+  clearToken: () => ipcRenderer.invoke("auth:clear-token"),
+  hasToken: () => ipcRenderer.invoke("auth:has-token"),
 });

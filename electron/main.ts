@@ -1,8 +1,13 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
-import { setupDatabaseIPC } from "./ipc/database";
-import { initDatabase } from "../src/db/database";
-import { runMigrations } from "../src/db/migrations";
+import { setupDatabaseIPC } from "./ipc/database.js";
+import { initDatabase } from "../src/db/database.js";
+import { runMigrations } from "../src/db/migrations.js";
+import { setupAuthIPC } from "./ipc/auth.js";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 const DIST_PATH = path.join(__dirname, "../../dist");
@@ -64,15 +69,15 @@ function initializeDatabase() {
     throw error;
   }
 }
+// Setup IPC handlers
+setupDatabaseIPC();
+setupAuthIPC();
 
 app
   .whenReady()
   .then(() => {
     // First initialize the database
     initializeDatabase();
-
-    // Setup the IPC handlers
-    setupDatabaseIPC();
 
     // Create window
     void createWindow();

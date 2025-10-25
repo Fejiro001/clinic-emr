@@ -19,6 +19,15 @@ declare global {
         count: number;
       }>;
     };
+
+    auth: {
+      saveToken: (
+        token: string
+      ) => Promise<{ success: boolean; error?: string }>;
+      getToken: () => Promise<string | null>;
+      clearToken: () => Promise<{ success: boolean }>;
+      hasToken: () => Promise<boolean>;
+    };
   }
 }
 

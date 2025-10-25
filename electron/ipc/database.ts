@@ -1,4 +1,4 @@
-import { getDatabase } from "../../src/db/database";
+import { getDatabase } from "../../src/db/database.js";
 import { ipcMain } from "electron";
 
 interface DbQuery {
@@ -12,8 +12,8 @@ export function setupDatabaseIPC(): void {
   ipcMain.handle("db:query", (_event, sql: string, params?: unknown[]) => {
     try {
       const db = getDatabase();
-      const stmt = db.prepare(sql);
-      return stmt.all(...(params ?? []));
+      const statement = db.prepare(sql);
+      return statement.all(...(params ?? []));
     } catch (error) {
       console.error("Database query error", error);
       throw error;
@@ -23,8 +23,8 @@ export function setupDatabaseIPC(): void {
   ipcMain.handle("db:query-one", (_event, sql: string, params?: unknown[]) => {
     try {
       const db = getDatabase();
-      const stmt = db.prepare(sql);
-      return stmt.get(...(params ?? []));
+      const statement = db.prepare(sql);
+      return statement.get(...(params ?? []));
     } catch (error) {
       console.error("Database query-one error", error);
       throw error;
@@ -34,8 +34,8 @@ export function setupDatabaseIPC(): void {
   ipcMain.handle("db:execute", (_event, sql: string, params?: unknown[]) => {
     try {
       const db = getDatabase();
-      const stmt = db.prepare(sql);
-      const result = stmt.run(...(params ?? []));
+      const statement = db.prepare(sql);
+      const result = statement.run(...(params ?? []));
       return {
         success: true,
         changes: result.changes,
@@ -55,8 +55,8 @@ export function setupDatabaseIPC(): void {
         const results = [];
 
         for (const query of queries) {
-          const stmt = db.prepare(query.sql);
-          results.push(stmt.run(...(query.params ?? [])));
+          const statement = db.prepare(query.sql);
+          results.push(statement.run(...(query.params ?? [])));
         }
         return results;
       });
