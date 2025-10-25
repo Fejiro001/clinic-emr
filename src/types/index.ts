@@ -1,7 +1,10 @@
-export interface User {
+export type UserRole = "doctor" | "secretary" | "nurse" | "admin";
+
+export interface UserProfile {
   id: string;
   email: string;
-  role: "doctor" | "secretary" | "nurse" | "admin";
+  full_name: string;
+  role: UserRole;
 }
 
 export interface Patient {
