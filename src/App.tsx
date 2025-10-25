@@ -1,73 +1,53 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./services/supabase";
+import { useEffect } from "react";
+import { useActivityTracker } from "./hooks/useActivityTracker";
+import { useAuthStore } from "./store/authStore";
+import { authService } from "./services/auth";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import LoginPage from "./pages/LoginPage";
+import { ProtectedRoute } from "./components/Auth";
+import Layout from "./layout/Layout";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  const [supabaseStatus, setSupabaseStatus] = useState("Testing Supabase...");
-  const [sqliteStatus, setSqliteStatus] = useState("Testing SQLite...");
+  const { isLoading } = useAuthStore();
+
+  useActivityTracker();
 
   useEffect(() => {
-    // Test Supabase
-    const testSupabase = async () => {
-      try {
-        const { count, error } = await supabase
-          .from("patients")
-          .select("*", { count: "exact", head: true });
-
-        if (error) throw error;
-
-        const patientCount = count ?? 0;
-        setSupabaseStatus(
-          `✅ Supabase connected (${String(patientCount)} records)`
-        );
-      } catch (error) {
-        setSupabaseStatus(
-          `❌ Supabase error: ${error instanceof Error ? error.message : "Unknown"}`
-        );
-      }
-    };
-
-    // Test SQLite
-    const testSQLite = async () => {
-      try {
-        const result = await window.db.query<{ count: number }>(
-          "SELECT COUNT(*) as count FROM patients"
-        );
-        setSqliteStatus(
-          `✅ SQLite connected (${String(result[0]?.count ?? 0)} records)`
-        );
-      } catch (error) {
-        setSqliteStatus(
-          `❌ SQLite error: ${error instanceof Error ? error.message : "Unknown"}`
-        );
-      }
-    };
-
-    void testSupabase();
-    void testSQLite();
+    void authService.initializeSession();
   }, []);
 
-  return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">Clinic EMR</h1>
-
-        <div className="space-y-3">
-          <div className="p-3 bg-gray-50 rounded">
-            <p className="text-sm font-semibold text-gray-700 mb-1">
-              Cloud Database:
-            </p>
-            <p className="text-sm text-gray-600">{supabaseStatus}</p>
-          </div>
-
-          <div className="p-3 bg-gray-50 rounded">
-            <p className="text-sm font-semibold text-gray-700 mb-1">
-              Local Database:
-            </p>
-            <p className="text-sm text-gray-600">{sqliteStatus}</p>
-          </div>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading Clinic EMR...</p>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="patients" element={<div>Patients Page</div>} />
+          <Route path="appointments" element={<div>Appointments Page</div>} />
+          <Route path="settings" element={<div>Settings Page</div>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
