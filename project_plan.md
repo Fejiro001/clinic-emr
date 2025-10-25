@@ -1232,14 +1232,14 @@ ipcRenderer.invoke("db:batch-query", [
 
 ```javascript
 // electron/ipc/database.js
-ipcMain.handle("db:batch-query", async (event, queries) => {
+ipcMain.handle("db:transaction", async (event, queries) => {
   const results = queries.map((q) => {
     return db.prepare(q.query).all(...q.params);
   });
   return results;
 });
 
-ipcMain.handle("db:write", async (event, table, operation, data) => {
+ipcMain.handle("db:execute", async (event, table, operation, data) => {
   // insert, update, or delete
   // Returns result + error handling
 });

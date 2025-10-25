@@ -6,6 +6,7 @@
   "main": "dist-electron/electron/main.js",
   "homepage": "./",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "electron:start": "wait-on tcp:5173 && set VITE_DEV_SERVER_URL=http://localhost:5173/ && electron .",
@@ -29,10 +30,13 @@
     "better-sqlite3": "^12.4.1",
     "electron-is-dev": "^3.0.1",
     "electron-store": "^11.0.2",
+    "lucide-react": "^0.546.0",
     "nanoid": "^5.1.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.65.0",
+    "react-router": "^7.9.4",
+    "sonner": "^2.0.7",
     "tailwindcss": "^4.1.14",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
