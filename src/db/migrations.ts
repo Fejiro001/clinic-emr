@@ -1,6 +1,6 @@
 import type Database from "better-sqlite3";
-import { createTables } from "./schema";
-import { createIndexes } from "./indexes";
+import { createTables } from "./schema.js";
+import { createIndexes } from "./indexes.js";
 
 interface Migration {
   id: number;
