@@ -25,7 +25,7 @@ interface RoleGuardProps {
  *   <AdminPanel />
  * </RoleGuard>
  */
-export const RoleGuard = ({
+const RoleGuard = ({
   children,
   allowedRoles,
   fallback = null,
@@ -39,3 +39,5 @@ export const RoleGuard = ({
 
   return <>{children}</>;
 };
+
+export default RoleGuard;

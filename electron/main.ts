@@ -22,7 +22,7 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
-    minWidth: 768,
+    minWidth: 765,
     minHeight: 768,
     webPreferences: {
       preload: VITE_DEV_SERVER_URL

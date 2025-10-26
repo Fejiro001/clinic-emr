@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import { ProtectedRoute } from "./components/Auth";
 import Layout from "./layout/Layout";
 import Dashboard from "./pages/Dashboard";
+import { Preloader } from "./components/Common";
 
 function App() {
   const [initialized, setInitialized] = useState(false);
@@ -26,14 +27,7 @@ function App() {
   }, []);
 
   if (!initialized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Clinic EMR...</p>
-        </div>
-      </div>
-    );
+    return <Preloader />;
   }
 
   return (
