@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { authService } from "../services/auth";
 
-export function useActivityTracker() {
+const useActivityTracker = () => {
   useEffect(() => {
     const events = [
       "mousedown",
@@ -36,3 +36,5 @@ export function useActivityTracker() {
     };
   }, []);
 }
+
+export default useActivityTracker;

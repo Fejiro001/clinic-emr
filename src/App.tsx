@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useActivityTracker } from "./hooks/useActivityTracker";
+import { useActivityTracker } from "./hooks";
 import { authService } from "./services/auth";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import LoginPage from "./pages/LoginPage";

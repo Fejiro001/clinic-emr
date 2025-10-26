@@ -13,6 +13,8 @@ import type { UserRole } from "../types";
  *   </button>
  * );
  */
-export const useHasRole = (roles: UserRole | UserRole[]): boolean => {
+const useHasRole = (roles: UserRole | UserRole[]): boolean => {
   return useAuthStore((state) => state.hasRole(roles));
 };
+
+export default useHasRole;
