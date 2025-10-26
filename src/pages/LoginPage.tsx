@@ -40,7 +40,7 @@ const LoginPage = () => {
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
         {/* Logo/Title */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Clinic EMR</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Celian Clinic EMR</h1>
           <p className="text-gray-600 mt-2">
             Electronic Medical Records System
           </p>
@@ -103,7 +103,7 @@ const LoginPage = () => {
         </form>
 
         {/* Help Text */}
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm text-slate-700">
           <p>Only authorized staff can access this system.</p>
           <p className="mt-1">Contact your administrator for access.</p>
         </div>
