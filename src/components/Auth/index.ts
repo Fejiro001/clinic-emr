@@ -1,6 +1,5 @@
-import FormError from "./FormError.js";
-import FormInput from "./FormInput.js";
-import FormLabel from "./FormLabel.js";
+import LogoutModal from "./LogoutModal.js";
 import ProtectedRoute from "./ProtectedRoute.js";
+import RoleGuard from "./RoleGuard.js";
 
-export { FormError, FormInput, FormLabel, ProtectedRoute };
+export { LogoutModal, ProtectedRoute, RoleGuard };

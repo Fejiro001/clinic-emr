@@ -9,7 +9,7 @@
   font-display: swap;
 }
 
-:root {
+@theme {
   /* Primary Colors - Professional Blue */
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
@@ -45,8 +45,8 @@
   --color-error: #ef4444;
   --color-info: #3b82f6;
 
-    /* Dark Theme */
-  --color-dark-bg: #1a202c;
+  /* Dark Theme */
+  --color-dark-bg: #041b49;
   --color-dark-surface: #2d3748;
   --color-dark-border: #4a5568;
 
@@ -54,21 +54,49 @@
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f9fafb;
   --color-bg-tertiary: #f3f4f6;
-}
 
+    /* Text Colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-inverse: #ffffff;
+
+  --animate-slide-in: slide-in 500ms ease-in-out forwards;
+
+  @keyframes slide-in {
+    0% {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+}
 body {
-  font-family:
-    "Outfit",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    "Roboto",
-    "Helvetica Neue",
-    sans-serif;
+  font-family: Outfit, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 button {
   cursor: pointer;
+}
+
+/* MODAL */
+.modal_inset {
+  @apply fixed inset-0 bg-black opacity-70  z-40;
+}
+.modal_parent {
+  @apply fixed inset-0 backdrop-blur-xs z-50 flex items-center justify-center p-4;
+}
+.modal_bg {
+  @apply bg-white rounded-md shadow-xl max-w-md w-full p-6 animate-slide-in;
+}
+
+/* SIDEBAR */
+.sidebar {
+  @apply relative bg-dark-bg text-white w-64 rounded-r-lg;
+}
+.sidebar_links {
+  @apply flex items-center gap-3 px-4 py-3 hover:bg-primary-900 transition-colors cursor-pointer;
 }
