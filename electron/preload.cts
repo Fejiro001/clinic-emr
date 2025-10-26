@@ -7,10 +7,10 @@ const { contextBridge, ipcRenderer } = require("electron") as {
 };
 
 contextBridge.exposeInMainWorld("db", {
-  query: <T = unknown>(sql: string, params?: unknown[]) =>
+  query: <T = unknown,>(sql: string, params?: unknown[]) =>
     ipcRenderer.invoke("db:query", sql, params) as Promise<T[]>,
 
-  queryOne: <T = unknown>(sql: string, params?: unknown[]) =>
+  queryOne: <T = unknown,>(sql: string, params?: unknown[]) =>
     ipcRenderer.invoke("db:query-one", sql, params) as Promise<T | undefined>,
 
   //   For INSERT/UPDATE/DELETE operations

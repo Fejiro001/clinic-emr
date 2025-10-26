@@ -24,6 +24,6 @@
     "outDir": "dist-electron",
     "rootDir": "."
   },
-  "include": ["electron/**/*.ts"],
+  "include": ["electron/**/*.ts", "electron/preload.cts"],
   "exclude": ["node_modules"],
 }

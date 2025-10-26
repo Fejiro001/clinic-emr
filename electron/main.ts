@@ -26,8 +26,8 @@ const createWindow = async () => {
     minHeight: 768,
     webPreferences: {
       preload: VITE_DEV_SERVER_URL
-        ? path.join(__dirname, "preload.js")
-        : path.join(DIST_PATH, "preload.js"),
+        ? path.join(__dirname, "preload.cjs")
+        : path.join(DIST_PATH, "preload.cjs"),
       nodeIntegration: false,
       contextIsolation: true,
     },
