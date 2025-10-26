@@ -36,3 +36,18 @@ contextBridge.exposeInMainWorld("auth", {
   clearToken: () => ipcRenderer.invoke("auth:clear-token"),
   hasToken: () => ipcRenderer.invoke("auth:has-token"),
 });
+
+contextBridge.exposeInMainWorld("network", {
+  isOnline: () => ipcRenderer.invoke("network:is-online"),
+  checkConnectivity: () => ipcRenderer.invoke("network:check-connectivity"),
+
+  // Listen to online/offline events from renderer
+  onOnline: (callback: () => void) => {
+    window.addEventListener("online", callback);
+    return () => window.removeEventListener("online", callback);
+  },
+  onOffline: (callback: () => void) => {
+    window.addEventListener("offline", callback);
+    return () => window.removeEventListener("offline", callback);
+  },
+});

@@ -28,6 +28,13 @@ declare global {
       clearToken: () => Promise<{ success: boolean }>;
       hasToken: () => Promise<boolean>;
     };
+
+    network: {
+      isOnline: () => Promise<boolean>;
+      checkConnectivity: () => Promise<boolean>;
+      onOnline: (callback: () => void) => () => void;
+      onOffline: (callback: () => void) => () => void;
+    };
   }
 }
 

@@ -1,10 +1,11 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
+import { fileURLToPath } from "url";
 import { setupDatabaseIPC } from "./ipc/database.js";
+import { setupAuthIPC } from "./ipc/auth.js";
+import { setupNetworkIPC } from "./ipc/network.js";
 import { initDatabase } from "../src/db/database.js";
 import { runMigrations } from "../src/db/migrations.js";
-import { setupAuthIPC } from "./ipc/auth.js";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,6 +73,7 @@ function initializeDatabase() {
 // Setup IPC handlers
 setupDatabaseIPC();
 setupAuthIPC();
+setupNetworkIPC();
 
 app
   .whenReady()

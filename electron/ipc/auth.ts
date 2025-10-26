@@ -20,7 +20,9 @@ export function setupAuthIPC(): void {
       }
 
       const encryptedToken = safeStorage.encryptString(token);
+      
       store.set(STORAGE_KEY, encryptedToken.toString("base64"));
+
       return { success: true };
     } catch (error) {
       console.error("Error saving token:", error);
