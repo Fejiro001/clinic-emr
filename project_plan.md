@@ -72,11 +72,11 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 ### 1.5 Network Detection & Offline State (Week 3)
 
-- [ ] Create Electron IPC handler for network status
-- [ ] Set up Zustand store for offline mode
-- [ ] Add online/offline event listeners
-- [ ] Create UI indicator for sync/offline status
-- [ ] Test network transitions (online → offline → online)
+- [x] Create Electron IPC handler for network status
+- [x] Set up Zustand store for offline mode
+- [x] Add online/offline event listeners
+- [x] Create UI indicator for sync/offline status
+- [x] Test network transitions (online → offline → online)
 
 ### 1.6 Sync Queue & Batching (Week 3)
 

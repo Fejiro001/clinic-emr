@@ -10,8 +10,9 @@ import {
   UserCog,
   Users,
 } from "lucide-react";
-import { LogoutModal, RoleGuard } from "../Auth/index.js";
+import { LogoutModal, RoleGuard } from "../Auth";
 import type { UserRole } from "../../types";
+import { SyncStatusIndicator } from "../Common";
 
 const navItems = [
   {
@@ -99,14 +100,14 @@ const Sidebar = () => {
           </ul>
         </nav>
 
-        <div className="mt-auto absolute inset-x-0 bottom-0 w-full border-t border-slate-400">
+        <div className="mt-auto absolute inset-x-0 bottom-0 w-full border-t border-slate-400 pt-4 space-y-2">
           {/* Online status indicator */}
-          <div></div>
+          <SyncStatusIndicator />
           <button
             onClick={() => {
               setShowLogoutModal(true);
             }}
-            className="sidebar_links"
+            className="sidebar_links w-full"
           >
             <LogOut size={20} />
             <span>Logout</span>

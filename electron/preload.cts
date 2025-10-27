@@ -38,7 +38,9 @@ contextBridge.exposeInMainWorld("auth", {
 });
 
 contextBridge.exposeInMainWorld("network", {
+  // Check if application is online
   isOnline: () => ipcRenderer.invoke("network:is-online"),
+  // Check current connectivity
   checkConnectivity: () => ipcRenderer.invoke("network:check-connectivity"),
 
   // Listen to online/offline events from renderer

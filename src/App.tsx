@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useActivityTracker } from "./hooks";
+import { useActivityTracker, useNetworkStatus } from "./hooks";
 import { authService } from "./services/auth";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import LoginPage from "./pages/LoginPage";
@@ -12,7 +12,10 @@ function App() {
   const [initialized, setInitialized] = useState(false);
   const initRef = useRef(false);
 
+  // Track the usesrs activity to manage app timeout
   useActivityTracker();
+  // Monitor the network status
+  useNetworkStatus();
 
   useEffect(() => {
     async function init() {
@@ -47,6 +50,9 @@ function App() {
           <Route path="patients" element={<div>Patients Page</div>} />
           <Route path="inpatient" element={<div>Inpatients Page</div>} />
           <Route path="outpatient" element={<div>Outpatients Page</div>} />
+          <Route path="audit-logs" element={<div>Audit Logs Page</div>} />
+          <Route path="users" element={<div>Users Page</div>} />
+          <Route path="profile" element={<div>Profiles Page</div>} />
         </Route>
       </Routes>
     </BrowserRouter>
