@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSyncStore } from "../store/syncStore";
 import { syncService } from "./sync";
 import { syncQueueService } from "./syncQueue";
@@ -7,7 +5,7 @@ import { syncQueueService } from "./syncQueue";
 interface BatchWriteOperation {
   table: string;
   operation: "insert" | "update" | "delete";
-  data: any;
+  data: Record<string, unknown>;
   recordId: string;
 }
 
@@ -68,7 +66,7 @@ export class BatchOperationsService {
   /**
    * Insert record to local database
    */
-  private async insertLocal(table: string, data: any): Promise<void> {
+  private async insertLocal(table: string, data: Record<string, unknown>): Promise<void> {
     const columns = Object.keys(data);
     const values = Object.values(data);
     const placeholders = columns.map(() => "?").join(", ");
@@ -88,7 +86,7 @@ export class BatchOperationsService {
   private async updateLocal(
     table: string,
     recordId: string,
-    data: any
+    data: Record<string, unknown>
   ): Promise<void> {
     const columns = Object.keys(data);
     const updates = columns.map((key) => `${key} = ?`).join(", ");
@@ -127,7 +125,7 @@ export class BatchOperationsService {
 
       // Transaction queries preparation
       const queries = operations.flatMap((op) => {
-        const queries: { sql: string; params: any[] }[] = [];
+        const queries: { sql: string; params: unknown[] }[] = [];
 
         // Add local write query
         switch (op.operation) {
@@ -135,7 +133,7 @@ export class BatchOperationsService {
             queries.push(this.buildInsertQuery(op.table, op.data));
             break;
           case "update":
-            queries.push(this.buildUpdateQuery(op.table, op.recordId, op.data));
+            queries.push(this.buildUpdateQuery(op.table, op.data, op.recordId));
             break;
           case "delete":
             queries.push(this.buildDeleteQuery(op.table, op.recordId));
@@ -179,8 +177,8 @@ export class BatchOperationsService {
    */
   private buildInsertQuery(
     table: string,
-    data: any
-  ): { sql: string; params: any[] } {
+    data: Record<string, unknown>
+  ): { sql: string; params: unknown[] } {
     const columns = Object.keys(data);
     const values = Object.values(data);
     const placeholders = columns.map(() => "?").join(", ");
@@ -196,9 +194,9 @@ export class BatchOperationsService {
    */
   private buildUpdateQuery(
     table: string,
-    data: any,
+    data: Record<string, unknown>,
     recordId: string
-  ): { sql: string; params: any[] } {
+  ): { sql: string; params: unknown[] } {
     const columns = Object.keys(data);
     const updates = columns.map((key) => `${key} = ?`).join(", ");
     const values = [...Object.values(data), recordId];
@@ -215,7 +213,7 @@ export class BatchOperationsService {
   private buildDeleteQuery(
     table: string,
     recordId: string
-  ): { sql: string; params: any[] } {
+  ): { sql: string; params: unknown[] } {
     return {
       sql: `UPDATE ${table} SET deleted_at = datetime('now') WHERE id = ?`,
       params: [recordId],

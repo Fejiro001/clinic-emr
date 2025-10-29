@@ -102,10 +102,12 @@ export class SyncService {
     items: SyncQueueItem[]
   ): Record<string, SyncQueueItem[]> {
     return items.reduce<Record<string, SyncQueueItem[]>>((acc, item) => {
-      if (!acc[item.table_name]) {
-        acc[item.table_name] = [];
+      const key = item.table_name;
+      if (!Object.prototype.hasOwnProperty.call(acc, key)) {
+        acc[key] = [];
       }
-      acc[item.table_name].push(item);
+
+      acc[key].push(item);
       return acc;
     }, {});
   }
@@ -122,6 +124,7 @@ export class SyncService {
     );
 
     for (const item of items) {
+      const id = item.id;
       try {
         // Check retry limit
         if ((item.retry_count ?? 0) >= MAX_RETRY_COUNT) {
@@ -129,11 +132,17 @@ export class SyncService {
             `Max retries reached for item ${String(item.id)} skipping`
           );
 
-          await syncQueueService.updateQueueItemStatus(
-            item.id,
-            "failed",
-            "Max retry count exceeded"
-          );
+          if (id != null) {
+            await syncQueueService.updateQueueItemStatus(
+              id,
+              "failed",
+              "Max retry count exceeded"
+            );
+          } else {
+            console.warn(
+              `Cannot mark item as failed due to missing id (record_id=${item.record_id})`
+            );
+          }
           continue;
         }
 
@@ -151,21 +160,33 @@ export class SyncService {
         }
 
         // Mark as synced
-        await syncQueueService.updateQueueItemStatus(item.id!, "synced");
+        if (id != null) {
+          await syncQueueService.updateQueueItemStatus(id, "synced");
+        } else {
+          console.warn(
+            `Cannot mark item as synced due to missing id (record_id=${item.record_id})`
+          );
+        }
         console.log(
           `✅ Synced ${item.operation} for ${tableName}:`,
           item.record_id
         );
       } catch (error) {
-        console.error(`❌ Failed to sync item ${item.id}:`, error);
+        console.error(`❌ Failed to sync item ${String(item.id)}:`, error);
 
-        // Increment retry count
-        await syncQueueService.incrementRetryCount(item.id!);
-        await syncQueueService.updateQueueItemStatus(
-          item.id!,
-          "failed",
-          error instanceof Error ? error.message : "Unknown error"
-        );
+        // Increment retry count and mark failed if id exists
+        if (id != null) {
+          await syncQueueService.incrementRetryCount(id);
+          await syncQueueService.updateQueueItemStatus(
+            id,
+            "failed",
+            error instanceof Error ? error.message : "Unknown error"
+          );
+        } else {
+          console.warn(
+            `Cannot update retry/status for item due to missing id (record_id=${item.record_id})`
+          );
+        }
       }
     }
   }
@@ -177,7 +198,10 @@ export class SyncService {
     tableName: string,
     item: SyncQueueItem
   ): Promise<void> {
-    const data = JSON.parse(item.data);
+    const data =
+      typeof item.data === "string"
+        ? (JSON.parse(item.data) as Record<string, unknown>)
+        : item.data;
 
     const { error } = await supabase.from(tableName).insert([data]);
 
@@ -191,7 +215,10 @@ export class SyncService {
     tableName: string,
     item: SyncQueueItem
   ): Promise<void> {
-    const data = JSON.parse(item.data);
+    const data =
+      typeof item.data === "string"
+        ? (JSON.parse(item.data) as Record<string, unknown>)
+        : item.data;
 
     const { error } = await supabase
       .from(tableName)

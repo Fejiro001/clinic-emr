@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSyncStore } from "../store/syncStore";
 
 type SyncOperation = "insert" | "update" | "delete";
@@ -9,7 +8,7 @@ export interface SyncQueueItem {
   table_name: string;
   record_id: string;
   operation: SyncOperation;
-  data: any;
+  data: Record<string, unknown>;
   status?: SyncStatus;
   retry_count?: number;
   last_retry_at?: number;
