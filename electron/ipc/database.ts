@@ -7,8 +7,6 @@ interface DbQuery {
 }
 
 export function setupDatabaseIPC(): void {
-  console.log("Setting up database IPC handlers.");
-
   ipcMain.handle("db:query", (_event, sql: string, params?: unknown[]) => {
     try {
       const db = getDatabase();

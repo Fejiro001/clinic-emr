@@ -95,7 +95,7 @@ button {
 
 /* SIDEBAR */
 .sidebar {
-  @apply relative bg-dark-bg text-white w-64 rounded-r-lg;
+  @apply relative bg-dark-bg text-white min-w-52 w-64 rounded-r-lg;
 }
 .sidebar_links {
   @apply flex items-center gap-3 px-4 py-3 hover:bg-primary-900 transition-colors cursor-pointer;

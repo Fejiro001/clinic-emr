@@ -27,6 +27,10 @@ declare global {
       getToken: () => Promise<string | null>;
       clearToken: () => Promise<{ success: boolean }>;
       hasToken: () => Promise<boolean>;
+      saveUserProfile: (
+        profile: string
+      ) => Promise<{ success: boolean; error?: string }>;
+      getUserProfile: () => Promise<string | null>;
     };
 
     network: {

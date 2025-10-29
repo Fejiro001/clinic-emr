@@ -5,7 +5,9 @@ const Header = () => {
   const usersRole =
     String(user?.role.charAt(0).toUpperCase()) + String(user?.role.slice(1));
   const date = new Date();
-  const today = new Intl.DateTimeFormat("en-NG").format(date);
+  const today = new Intl.DateTimeFormat("en-NG", {
+    dateStyle: "long",
+  }).format(date);
 
   return (
     <header className="bg-white shadow-lg">

@@ -4,6 +4,7 @@ import Store from "electron-store";
 const store = new Store();
 
 const STORAGE_KEY = "auth_token_encrypted";
+const USER_PROFILE_KEY = "user_profile_encrypted";
 /**
  * Setup IPC handlers for authentication
  *
@@ -20,7 +21,7 @@ export function setupAuthIPC(): void {
       }
 
       const encryptedToken = safeStorage.encryptString(token);
-      
+
       store.set(STORAGE_KEY, encryptedToken.toString("base64"));
 
       return { success: true };
@@ -70,5 +71,50 @@ export function setupAuthIPC(): void {
   // Check if token exists
   ipcMain.handle("auth:has-token", () => {
     return store.has(STORAGE_KEY);
+  });
+
+  // Save encrypted user profile
+  ipcMain.handle("auth:save-user-profile", (_event, profile: string) => {
+    try {
+      if (!safeStorage.isEncryptionAvailable()) {
+        store.set(USER_PROFILE_KEY, profile);
+        return { success: true };
+      }
+
+      const encryptedProfile = safeStorage.encryptString(profile);
+      store.set(USER_PROFILE_KEY, encryptedProfile);
+      return { success: true };
+    } catch (error) {
+      console.error("Error saving user profile:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to save user profile",
+      };
+    }
+  });
+
+  // Retrieve and decrypt user profile
+  ipcMain.handle("auth:get-user-profile", () => {
+    try {
+      const storedData = store.get(USER_PROFILE_KEY) as string | undefined;
+
+      if (!storedData) {
+        return null;
+      }
+
+      if (!safeStorage.isEncryptionAvailable()) {
+        return storedData;
+      }
+
+      const buffer = Buffer.from(storedData, "base64");
+      const decryptedProfile = safeStorage.decryptString(buffer);
+      return decryptedProfile;
+    } catch (error) {
+      console.error("Error retrieving profile:", error);
+      return null;
+    }
   });
 }

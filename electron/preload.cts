@@ -35,6 +35,9 @@ contextBridge.exposeInMainWorld("auth", {
   getToken: () => ipcRenderer.invoke("auth:get-token"),
   clearToken: () => ipcRenderer.invoke("auth:clear-token"),
   hasToken: () => ipcRenderer.invoke("auth:has-token"),
+  saveUserProfile: (profile: string) =>
+    ipcRenderer.invoke("auth:save-user-profile", profile),
+  getUserProfile: () => ipcRenderer.invoke("auth:get-user-profile"),
 });
 
 contextBridge.exposeInMainWorld("network", {
