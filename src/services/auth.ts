@@ -1,4 +1,5 @@
 import { useAuthStore } from "../store/authStore.js";
+import { useSyncStore } from "../store/syncStore.js";
 import type { UserProfile, UserRole } from "../types/index.js";
 import { supabase } from "./supabase.js";
 
@@ -45,6 +46,10 @@ export class AuthService {
       if (!profile) {
         throw new Error("User profile not found");
       }
+
+      // Save encrypted user profile for offline access
+      await window.auth.saveUserProfile(JSON.stringify(profile));
+
       // Update auth store
       useAuthStore.getState().setSession(data.session);
       useAuthStore.getState().setUser(profile);
@@ -170,36 +175,84 @@ export class AuthService {
 
   /**
    * Initialize session on app startup
+   * Also works offline by using cached user profile
    */
   async initializeSession() {
     try {
       useAuthStore.getState().setLoading(true);
 
+      // Check if we have a saved token
+      const hasToken = await window.auth.hasToken();
+
+      if (!hasToken) {
+        return { success: false, reason: "no_token" };
+      }
+
       // Try to get saved token
       const savedToken = await window.auth.getToken();
 
-      if (savedToken) {
-        const { data, error } = await supabase.auth.setSession({
-          access_token: savedToken,
-          refresh_token: savedToken, // You should save refresh token too
-        });
+      if (!savedToken) {
+        return { success: false, reason: "invalid_token" };
+      }
 
-        if (!error && data.session) {
-          const profile = await this.getUserProfile(data.session.user.id);
+      const { isOnline } = useSyncStore.getState();
 
-          if (profile) {
-            useAuthStore.getState().setSession(data.session);
-            useAuthStore.getState().setUser(profile);
-            this.startInactivityTimer();
+      if (isOnline) {
+        console.log("Online profile");
+        // Try online validation first
+        try {
+          const { data, error } = await supabase.auth.setSession({
+            access_token: savedToken,
+            refresh_token: savedToken,
+          });
 
-            return { success: true, user: profile };
+          if (!error && data.session) {
+            const profile = await this.getUserProfile(data.session.user.id);
+
+            if (profile) {
+              // Update cached profile
+              await window.auth.saveUserProfile(JSON.stringify(profile));
+
+              useAuthStore.getState().setSession(data.session);
+              useAuthStore.getState().setUser(profile);
+              this.startInactivityTimer();
+
+              return { success: true, user: profile, source: "online" };
+            }
           }
+        } catch (onlineError) {
+          console.error(
+            "Online validation failed, trying offline cache:",
+            onlineError
+          );
         }
       }
-      return { success: false };
+
+      // Offline or online validation failed: use cached profile
+      const cachedProfileStr = await window.auth.getUserProfile();
+
+      if (cachedProfileStr) {
+        try {
+          const cachedProfile = JSON.parse(cachedProfileStr) as UserProfile;
+
+          useAuthStore.getState().setUser(cachedProfile);
+          this.startInactivityTimer();
+
+          console.log("Cached profile");
+          return {
+            success: true,
+            user: cachedProfile,
+            source: "offline_cache",
+          };
+        } catch (parseError) {
+          console.error("Error parsing cached profile:", parseError);
+        }
+      }
+
+      return { success: false, reason: "no_cached_profile" };
     } catch (error) {
       console.error("Session initialization error:", error);
-      return { success: false };
+      return { success: false, error };
     } finally {
       useAuthStore.getState().setLoading(false);
     }

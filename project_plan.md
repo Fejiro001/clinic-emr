@@ -80,12 +80,12 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 ### 1.6 Sync Queue & Batching (Week 3)
 
-- [ ] Create SQLite sync_queue table (local)
-- [ ] Build write queue system for offline operations
-- [ ] Implement batched IPC queries (renderer → main → SQLite)
-- [ ] Implement batched API calls to Supabase (max 50 items/batch)
-- [ ] Test queue persistence on app close/restart
-- [ ] Test batching performance
+- [x] Create SQLite sync_queue table (local)
+- [x] Build write queue system for offline operations
+- [x] Implement batched IPC queries (renderer → main → SQLite)
+- [x] Implement batched API calls to Supabase (max 50 items/batch)
+- [x] Test queue persistence on app close/restart
+- [x] Test batching performance
 
 ### 1.7 Conflict Detection & Resolution (Week 4)
 
@@ -778,7 +778,7 @@ CREATE TRIGGER inpatient_records_audit AFTER INSERT OR UPDATE OR DELETE ON inpat
 ## Development Workflow (Revised)
 
 1. **Week 1-2**: Setup + Auth + Security
-2. **Week 3-4**: Sync Engine + Conflict Resolution + Retry Logic
+2. **Week 3-4**: Sync Engine + Conflict Resolutiorecord_idRetry Logic
 3. **Week 5-6**: Inpatient Module (with operations table)
 4. **Week 6-7**: Outpatient Module + Conversion
 5. **Week 8**: Patient Timeline + Audit Logs
