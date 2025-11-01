@@ -1,8 +1,6 @@
 import type Database from "better-sqlite3";
 
 export function createIndexes(db: Database.Database): void {
-  console.log("Creating SQLite indexes...");
-
   // Patient Indexes
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_patient_phone ON patients(phone) WHERE deleted_at IS NULL;
@@ -41,6 +39,4 @@ export function createIndexes(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
     CREATE INDEX IF NOT EXISTS idx_audit_table_record ON audit_logs(table_name, record_id);
   `);
-
-  console.log("✅ All indexes created");
 }

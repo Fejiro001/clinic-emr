@@ -17,7 +17,6 @@ export function initDatabase(dbPath: string): Database.Database {
   //   Enable foreign key constraints
   db.pragma("foreign_keys = ON");
 
-  console.log("✅ SQLite database initialized at", dbPath);
   return db;
 }
 
@@ -39,6 +38,5 @@ export function closeDatabase(): void {
   if (db) {
     db.close();
     db = null;
-    console.log("✅ SQLite database connection closed.");
   }
 }

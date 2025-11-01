@@ -25,6 +25,7 @@ const Dashboard = () => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           version: 1,
+          
         },
       });
 

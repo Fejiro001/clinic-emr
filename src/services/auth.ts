@@ -1,7 +1,8 @@
+import { supabase } from "./supabase.js";
 import { useAuthStore } from "../store/authStore.js";
 import { useSyncStore } from "../store/syncStore.js";
 import type { UserProfile, UserRole } from "../types/index.js";
-import { supabase } from "./supabase.js";
+import { showToast } from "../utils/toast.js";
 
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
@@ -32,6 +33,7 @@ export class AuthService {
       });
 
       if (error) {
+        showToast.error(error.message || "Invalid email or password");
         return {
           success: false,
           error: error.message || "Invalid email or password",
@@ -57,9 +59,10 @@ export class AuthService {
       // Start inactivity timer
       this.startInactivityTimer();
 
+      showToast.success(`Welcome back, ${profile.full_name}!`);
       return { success: true, session: data.session, user: data.user, profile };
     } catch (error) {
-      console.error("Login error details:", error);
+      showToast.error("Login failed. Please try again.");
       throw error;
     }
   }
@@ -95,16 +98,14 @@ export class AuthService {
   async logout() {
     try {
       this.stopInactivityTimer();
-
       await window.auth.clearToken();
-
       await supabase.auth.signOut();
-
       useAuthStore.getState().logout();
 
+      showToast.info("Logged out successfully.");
       return { success: true };
-    } catch (error) {
-      console.error("Error logging out:", error);
+    } catch {
+      showToast.error("Logout failed");
       return { success: false, error: "Logout failed" };
     }
   }

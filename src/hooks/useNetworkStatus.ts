@@ -3,6 +3,7 @@ import { useSyncStore } from "../store/syncStore";
 import { syncService } from "../services/sync";
 import { syncQueueService } from "../services/syncQueue";
 import { authService } from "../services/auth";
+import { showToast } from "../utils/toast";
 
 /**
  * Hook to monitor network status and update sync store
@@ -30,12 +31,13 @@ const useNetworkStatus = () => {
 
     // Listen for online event
     const handleOnline = () => {
-      console.log("Network: Online");
       const currentStatus = useSyncStore.getState().isOnline;
 
       if (!currentStatus) {
         useSyncStore.getState().setOnline(true);
         useSyncStore.getState().setSyncError(null);
+
+        showToast.success("Back online. Syncing data...");
 
         void authService.initializeSession();
 
@@ -51,6 +53,8 @@ const useNetworkStatus = () => {
       console.log("Network: Offline");
       useSyncStore.getState().setOnline(false);
       useSyncStore.getState().setSyncStatus("offline");
+
+      showToast.warning("You are offline. Changes will be synced when reconnected.");
 
       if (syncTimeout) {
         clearTimeout(syncTimeout);
