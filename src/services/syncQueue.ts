@@ -1,21 +1,5 @@
 import { useSyncStore } from "../store/syncStore";
-
-type SyncOperation = "insert" | "update" | "delete";
-type SyncStatus = "pending" | "syncing" | "synced" | "failed" | "conflict";
-
-export interface SyncQueueItem {
-  id?: number;
-  table_name: string;
-  record_id: string;
-  operation: SyncOperation;
-  data: Record<string, unknown>;
-  status?: SyncStatus;
-  retry_count?: number;
-  last_retry_at?: number;
-  error_message?: string;
-  created_at?: number;
-  synced_at?: number;
-}
+import type { SyncQueueItem, SyncStatus } from "../types";
 
 export class SyncQueueService {
   /**
@@ -38,12 +22,6 @@ export class SyncQueueService {
           JSON.stringify(item.data),
         ]
       );
-
-      console.log("📝 Added to sync queue:", {
-        table: item.table_name,
-        operation: item.operation,
-        recordId: item.record_id,
-      });
 
       // Update the pending count when items are added to queue
       await this.updatePendingCount();
@@ -76,7 +54,7 @@ export class SyncQueueService {
   }
 
   /**
-   * Update queue item status
+   * Update the status of the item in the queue
    */
   async updateQueueItemStatus(
     id: number,
@@ -124,7 +102,7 @@ export class SyncQueueService {
    */
   async markAsSyncing(ids: number[]): Promise<void> {
     try {
-      const placeholders = ids.map(() => "?").join(",");
+      const placeholders = ids.map(() => "?").join(", ");
       await window.db.execute(
         `UPDATE sync_queue
         SET status = 'syncing'
@@ -176,8 +154,6 @@ export class SyncQueueService {
         AND synced_at < ?`,
         [sevenDaysAgo]
       );
-
-      console.log("Cleared old synced items");
     } catch (error) {
       console.error("Error cleaning up:", error);
       throw error;
@@ -203,6 +179,21 @@ export class SyncQueueService {
     } catch (error) {
       console.error("Error getting queue items by record", error);
       return [];
+    }
+  }
+
+  /**
+   * Get count of conflicts in the queue
+   */
+  async getConflictCount(): Promise<number> {
+    try {
+      const result = await window.db.queryOne<{ count: number }>(
+        `SELECT COUNT(*) as count FROM sync_queue WHERE status = 'conflict'`
+      );
+      return result?.count ?? 0;
+    } catch (error) {
+      console.error("Error getting conflict count:", error);
+      return 0;
     }
   }
 }

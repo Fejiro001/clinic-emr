@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type SyncStatus = "idle" | "offline" | "error" | "syncing" | "synced";
+type SyncStatus = "idle" | "offline" | "error" | "syncing" | "synced" | "conflict";
 
 interface SyncState {
   // Network status

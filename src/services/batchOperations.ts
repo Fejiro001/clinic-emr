@@ -1,13 +1,7 @@
 import { useSyncStore } from "../store/syncStore";
+import type { BatchWriteOperation } from "../types";
 import { syncService } from "./sync";
 import { syncQueueService } from "./syncQueue";
-
-interface BatchWriteOperation {
-  table: string;
-  operation: "insert" | "update" | "delete";
-  data: Record<string, unknown>;
-  recordId: string;
-}
 
 export class BatchOperationsService {
   /**
@@ -158,9 +152,6 @@ export class BatchOperationsService {
       const result = await window.db.transaction(queries);
 
       if (result.success) {
-        console.log(
-          `Batch executed successfully: ${String(result.count)} queries`
-        );
         await syncQueueService.updatePendingCount();
         return true;
       }

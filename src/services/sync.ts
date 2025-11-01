@@ -1,7 +1,10 @@
-import { useSyncStore } from "../store/syncStore";
 import { supabase } from "./supabase";
 import { syncQueueService } from "./syncQueue";
-import type { SyncQueueItem } from "./syncQueue";
+import { useSyncStore } from "../store/syncStore";
+import type { ConflictInfo, SyncQueueItem } from "../types";
+import { parseTime } from "../utils/dateUtils";
+import { showToast } from "../utils/toast";
+import { conflictDetectionService } from "./conflictDetection";
 
 const MAX_BATCH_SIZE = 50;
 const MAX_RETRY_COUNT = 5;
@@ -16,30 +19,23 @@ export class SyncService {
   async syncAll() {
     const { isOnline } = useSyncStore.getState();
 
-    // Don't sync offline or already synced
-    if (!isOnline || this.isSyncing) {
-      console.log("Sync skipped", { isOnline, isSyncing: this.isSyncing });
-      return;
-    }
+    // Don't sync offline or already syncing
+    if (!isOnline || this.isSyncing) return;
 
     try {
       this.isSyncing = true;
       useSyncStore.getState().setSyncStatus("syncing");
-
-      console.log("Sync starting");
+      showToast.syncStarted();
 
       // Get pending items
       const pendingItems =
         await syncQueueService.getAllPendingItems(MAX_BATCH_SIZE);
 
       if (pendingItems.length === 0) {
-        console.log("No items to sync");
         useSyncStore.getState().setSyncStatus("synced");
         useSyncStore.getState().setLastSyncTime(Date.now());
         return;
       }
-
-      console.log(`Syncing ${String(pendingItems.length)} items`);
 
       // Mark as syncing
       const itemIds = pendingItems.map((item) => item.id) as number[];
@@ -53,12 +49,29 @@ export class SyncService {
         await this.syncTableItems(tableName, items);
       }
 
+      // Check for conflicts detected during this sync
+      const conflictCount = await syncQueueService.getConflictCount();
+      if (conflictCount > 0) {
+        useSyncStore.getState().setSyncStatus("conflict");
+        useSyncStore.getState().setConflictsCount(conflictCount);
+
+        showToast.conflicts(conflictCount, () => {
+          window.dispatchEvent(new CustomEvent("open-conflict-resolver"));
+        });
+
+        // Trigger UI to show conflict modal
+        window.dispatchEvent(new CustomEvent("sync-conflicts-detected"));
+
+        console.log(`${String(conflictCount)} conflicts detected during sync`);
+        return;
+      }
+
       // Update sync status
       useSyncStore.getState().setSyncStatus("synced");
       useSyncStore.getState().setLastSyncTime(Date.now());
       useSyncStore.getState().setSyncError(null);
 
-      console.log("Sync completed successfully");
+      showToast.syncSuccess();
 
       // If there are more items, sync again
       const remainingCount = await syncQueueService.getPendingCount();
@@ -69,14 +82,8 @@ export class SyncService {
         );
 
         if (hasRetryableItems) {
-          console.log(
-            `🔄 ${String(remainingCount)} items remaining, syncing again...`
-          );
           setTimeout(() => void this.syncAll(), 1000);
         } else {
-          console.log(
-            `⚠️ ${String(remainingCount)} items failed permanently, stopping sync`
-          );
           useSyncStore
             .getState()
             .setSyncError(
@@ -85,11 +92,13 @@ export class SyncService {
         }
       }
     } catch (error) {
-      console.error("❌ Sync failed:", error);
       useSyncStore.getState().setSyncStatus("error");
       useSyncStore
         .getState()
         .setSyncError(error instanceof Error ? error.message : "Sync failed");
+      showToast.syncError(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     } finally {
       this.isSyncing = false;
     }
@@ -103,10 +112,7 @@ export class SyncService {
   ): Record<string, SyncQueueItem[]> {
     return items.reduce<Record<string, SyncQueueItem[]>>((acc, item) => {
       const key = item.table_name;
-      if (!Object.prototype.hasOwnProperty.call(acc, key)) {
-        acc[key] = [];
-      }
-
+      acc[key] ??= [];
       acc[key].push(item);
       return acc;
     }, {});
@@ -119,10 +125,6 @@ export class SyncService {
     tableName: string,
     items: SyncQueueItem[]
   ): Promise<void> {
-    console.log(
-      `Syncing ${String(items.length)} items for table: ${tableName}`
-    );
-
     for (const item of items) {
       const id = item.id;
       try {
@@ -137,10 +139,6 @@ export class SyncService {
               id,
               "failed",
               "Max retry count exceeded"
-            );
-          } else {
-            console.warn(
-              `Cannot mark item as failed due to missing id (record_id=${item.record_id})`
             );
           }
           continue;
@@ -162,18 +160,8 @@ export class SyncService {
         // Mark as synced
         if (id != null) {
           await syncQueueService.updateQueueItemStatus(id, "synced");
-        } else {
-          console.warn(
-            `Cannot mark item as synced due to missing id (record_id=${item.record_id})`
-          );
         }
-        console.log(
-          `✅ Synced ${item.operation} for ${tableName}:`,
-          item.record_id
-        );
       } catch (error) {
-        console.error(`❌ Failed to sync item ${String(item.id)}:`, error);
-
         // Increment retry count and mark failed if id exists
         if (id != null) {
           await syncQueueService.incrementRetryCount(id);
@@ -209,24 +197,75 @@ export class SyncService {
   }
 
   /**
-   * Sync update operation
+   * Sync update operation (with conflict detection)
    */
   private async syncUpdate(
     tableName: string,
     item: SyncQueueItem
   ): Promise<void> {
-    const data =
+    const localData =
       typeof item.data === "string"
         ? (JSON.parse(item.data) as Record<string, unknown>)
         : item.data;
 
+    const { data: remoteData, error: fetchError } = await supabase
+      .from(tableName)
+      .select("*")
+      .eq("id", item.record_id)
+      .single<Record<string, unknown>>();
+
+    if (fetchError) throw fetchError;
+
+    // Detect conflicts
+    const conflict = conflictDetectionService.detectConflict(
+      tableName,
+      item.record_id,
+      localData,
+      remoteData
+    );
+
+    if (conflict) {
+      console.log("Conflict detected:", conflict);
+
+      // Try to auto-resolve
+      const resolved = this.tryAutoResolver(conflict);
+
+      if (resolved) {
+        // Auto-resolved, update with merged data
+        const { error } = await supabase
+          .from(tableName)
+          .update(resolved)
+          .eq("id", item.record_id);
+
+        if (error) throw error;
+        console.log("Auto-resolved conflict for record_id:", item.record_id);
+        return;
+      } else {
+        // Needs manual resolution - save to Supabase
+        await this.saveConflictToSupabase(conflict);
+
+        // Mark queue item as conflict
+        const id = item.id;
+
+        if (id != null) {
+          await syncQueueService.updateQueueItemStatus(
+            id,
+            "conflict",
+            `Conflict on fields: ${conflict.changedFields.map((f) => f.fieldName).join(", ")}`
+          );
+        }
+      }
+    }
+
+    // No conflict, sync normally
     const { error } = await supabase
       .from(tableName)
-      .update(data)
+      .update(localData)
       .eq("id", item.record_id);
 
     if (error) throw error;
   }
+
   /**
    * Sync delete operation (soft delete)
    */
@@ -246,7 +285,6 @@ export class SyncService {
    * Auto-sync when online
    */
   async syncOnOnline(): Promise<void> {
-    console.log("Automatically syncing");
     await this.syncAll();
   }
 
@@ -254,8 +292,69 @@ export class SyncService {
    * Manually trigger sync
    */
   async syncNow(): Promise<void> {
-    console.log("Manual sync");
+    if (this.isSyncing) {
+      showToast.warning("Sync is already in progress");
+      return;
+    }
     await this.syncAll();
+  }
+
+  /**
+   * Try to auto-resolve conflict using CONFLICT_RULES
+   */
+  private tryAutoResolver(
+    conflict: ConflictInfo
+  ): Record<string, unknown> | null {
+    const resolvedData = { ...conflict.localData };
+    let allResolved = true;
+
+    for (const field of conflict.changedFields) {
+      switch (field.strategy) {
+        case "prefer_recent": {
+          const localUpdated = parseTime(conflict.localData.updated_at);
+          const remoteUpdated = parseTime(conflict.remoteData.updated_at);
+
+          if (localUpdated > remoteUpdated) {
+            resolvedData[field.fieldName] = field.localValue;
+          } else {
+            resolvedData[field.fieldName] = field.remoteValue;
+          }
+          break;
+        }
+
+        case "prefer_remote":
+          resolvedData[field.fieldName] = field.remoteValue;
+          break;
+
+        case "prefer_local":
+          resolvedData[field.fieldName] = field.localValue;
+          break;
+
+        case "flag_for_review":
+          allResolved = false;
+          break;
+      }
+    }
+
+    return allResolved ? resolvedData : null;
+  }
+
+  /**
+   * Save conflict to Supabase for manual resolution
+   */
+  private async saveConflictToSupabase(conflict: ConflictInfo): Promise<void> {
+    const { error } = await supabase.from("sync_conflicts").insert({
+      table_name: conflict.tableName,
+      record_id: conflict.recordId,
+      local_version: conflict.localData,
+      remote_version: conflict.remoteData,
+      conflict_type: "field_mismatch",
+    });
+
+    if (error) {
+      console.error("Error saving conflict to Supabase:", error);
+      throw error;
+    }
   }
 }
 
