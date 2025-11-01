@@ -7,6 +7,7 @@ interface DbQuery {
 }
 
 export function setupDatabaseIPC(): void {
+  // Query the db for all rows of data as an array of JS objects
   ipcMain.handle("db:query", (_event, sql: string, params?: unknown[]) => {
     try {
       const db = getDatabase();
@@ -18,6 +19,7 @@ export function setupDatabaseIPC(): void {
     }
   });
 
+  // Query the db for retrieve a single row of data
   ipcMain.handle("db:query-one", (_event, sql: string, params?: unknown[]) => {
     try {
       const db = getDatabase();

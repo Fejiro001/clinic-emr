@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useActivityTracker, useNetworkStatus } from "./hooks";
 import { authService } from "./services/auth";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router";
-import LoginPage from "./pages/LoginPage";
-import { ProtectedRoute } from "./components/Auth";
-import Layout from "./layout/Layout";
-import Dashboard from "./pages/Dashboard";
 import { Preloader } from "./components/Common";
+import AppRoutes from "./router/AppRoutes";
+import { Toaster } from "sonner";
+import ConflictResolver from "./components/Common/ConflictResolver";
 
 function App() {
   const [initialized, setInitialized] = useState(false);
+  const [showConflicts, setShowConflicts] = useState(false);
   const initRef = useRef(false);
 
-  // Track the usesrs activity to manage app timeout
+  // Track the users activities to manage app timeout
   useActivityTracker();
   // Monitor the network status
   useNetworkStatus();
@@ -29,33 +28,41 @@ function App() {
     void init();
   }, []);
 
+  useEffect(() => {
+    const handleConflicts = () => {
+      setShowConflicts(true);
+    };
+
+    window.addEventListener("sync-conflicts-detected", handleConflicts);
+
+    return () => {
+      window.removeEventListener("sync-conflicts-detected", handleConflicts);
+    };
+  }, []);
+
   if (!initialized) {
     return <Preloader />;
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="patients" element={<div>Patients Page</div>} />
-          <Route path="inpatient" element={<div>Inpatients Page</div>} />
-          <Route path="outpatient" element={<div>Outpatients Page</div>} />
-          <Route path="audit-logs" element={<div>Audit Logs Page</div>} />
-          <Route path="users" element={<div>Users Page</div>} />
-          <Route path="profile" element={<div>Profiles Page</div>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Toaster
+        position="top-right"
+        closeButton
+        richColors
+        expand={false}
+        duration={4000}
+      />
+      
+      <AppRoutes />
+
+      <ConflictResolver
+        isOpen={showConflicts}
+        onClose={() => {
+          setShowConflicts(false);
+        }}
+      />
+    </>
   );
 }
 

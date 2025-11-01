@@ -56,15 +56,11 @@ function initializeDatabase() {
     const userDataPath = app.getPath("userData");
     const dbPath = path.join(userDataPath, "clinic-emr.db");
 
-    console.log("Database path:", dbPath);
-
     // Initialize SQLite
     const db = initDatabase(dbPath);
 
     // Run migrations
     runMigrations(db);
-
-    console.log("Database ready");
   } catch (error) {
     console.error("Database initialization failed", error);
     throw error;

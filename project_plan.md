@@ -46,7 +46,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Create database indexes (phone, DOB, dates)
 - [x] Define and test all RLS policies for each role
 - [x] Create PostgreSQL triggers for audit logs
-- [x] Create sync_conflicts (PostgreSQL side)
+- [x] Create sync_conflicts
 - [x] Create sync_queue tables (SQLite side)
 - [x] Create API keys and configure .env.local
 
@@ -89,11 +89,11 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 ### 1.7 Conflict Detection & Resolution (Week 4)
 
-- [ ] Define CONFLICT_RULES for each table (as above)
-- [ ] Implement conflict detection logic (version/timestamp comparison)
-- [ ] Create sync_conflicts table queries
-- [ ] Build conflict resolution UI (show conflicts, let user choose)
-- [ ] Implement auto-resolution rules (prefer_recent, prefer_remote, etc.)
+- [x] Define CONFLICT_RULES for each table (as above)
+- [x] Implement conflict detection logic (version/timestamp comparison)
+- [x] Create sync_conflicts table queries
+- [x] Build conflict resolution UI (show conflicts, let user choose)
+- [x] Implement auto-resolution rules (prefer_recent, prefer_remote, etc.)
 - [ ] Test conflict scenarios (edit same field offline, sync, resolve)
 
 ### 1.8 Retry Logic & Exponential Backoff (Week 4)
@@ -778,7 +778,7 @@ CREATE TRIGGER inpatient_records_audit AFTER INSERT OR UPDATE OR DELETE ON inpat
 ## Development Workflow (Revised)
 
 1. **Week 1-2**: Setup + Auth + Security
-2. **Week 3-4**: Sync Engine + Conflict Resolutiorecord_idRetry Logic
+2. **Week 3-4**: Sync Engine + Conflict Resolution and Retry Logic
 3. **Week 5-6**: Inpatient Module (with operations table)
 4. **Week 6-7**: Outpatient Module + Conversion
 5. **Week 8**: Patient Timeline + Audit Logs
