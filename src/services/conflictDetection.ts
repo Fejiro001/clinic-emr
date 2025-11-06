@@ -56,7 +56,7 @@ export class ConflictDetectionService {
     const rules = CONFLICT_RULES[tableName];
 
     // Ignore system fields
-    const ignoreFields = [
+    const ignoreFields = new Set([
       "id",
       "created_at",
       "created_by",
@@ -65,10 +65,10 @@ export class ConflictDetectionService {
       "deleted_at",
       "version",
       "synced_at",
-    ];
+    ]);
 
     for (const field in local) {
-      if (!Object.hasOwn(ignoreFields, field)) continue;
+      if (ignoreFields.has(field)) continue;
 
       const localValue = local[field];
       const remoteValue = remote[field];
