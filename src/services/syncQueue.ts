@@ -161,7 +161,7 @@ export class SyncQueueService {
   }
 
   /**
-   * Get items by table and record (for coflict detection)
+   * Get items by table and record (for conflict detection)
    */
   async getQueueItemsByRecord(
     tableName: string,

@@ -5,11 +5,13 @@ import { Preloader } from "./components/Common";
 import AppRoutes from "./router/AppRoutes";
 import { Toaster } from "sonner";
 import ConflictResolver from "./components/Common/ConflictResolver";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
   const [initialized, setInitialized] = useState(false);
   const [showConflicts, setShowConflicts] = useState(false);
   const initRef = useRef(false);
+  const queryClient = new QueryClient();
 
   // Track the users activities to manage app timeout
   useActivityTracker();
@@ -45,7 +47,7 @@ function App() {
   }
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Toaster
         position="top-right"
         closeButton
@@ -53,7 +55,7 @@ function App() {
         expand={false}
         duration={4000}
       />
-      
+
       <AppRoutes />
 
       <ConflictResolver
@@ -62,7 +64,7 @@ function App() {
           setShowConflicts(false);
         }}
       />
-    </>
+    </QueryClientProvider>
   );
 }
 
