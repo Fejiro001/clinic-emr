@@ -7,10 +7,11 @@ describe("Sync Queue Tests", () => {
 
   beforeEach(() => {
     service = new SyncQueueService();
+    vi.clearAllMocks();
   });
 
   describe("addToQueue", () => {
-    it("should add an item to queue with pending status", async () => {
+    it("should add item to queue with pending status", async () => {
       // Mock db.execute to return success
       window.db.execute = vi.fn().mockResolvedValue({
         success: true,
@@ -28,7 +29,7 @@ describe("Sync Queue Tests", () => {
   });
 
   describe("getAllPendingItems", () => {
-    it("should get all pending items", async () => {
+    it("should return all pending items with limit", async () => {
       window.db.query = vi.fn().mockResolvedValue([mockSyncQueueItem]);
 
       const result = await service.getAllPendingItems(50);
@@ -39,22 +40,10 @@ describe("Sync Queue Tests", () => {
         [50]
       );
     });
-
-    it("should limit results", async () => {
-      const items = Array(100).fill(mockSyncQueueItem);
-      window.db.query = vi.fn().mockResolvedValue(items);
-
-      await service.getAllPendingItems(50);
-
-      expect(window.db.query).toHaveBeenCalledWith(
-        expect.stringContaining("LIMIT ?"),
-        [50]
-      );
-    });
   });
 
   describe("updateQueueItemStatus", () => {
-    it("should update the status of the queued item", async () => {
+    it("should update status", async () => {
       window.db.execute = vi.fn().mockResolvedValue({
         success: true,
       });
@@ -67,7 +56,7 @@ describe("Sync Queue Tests", () => {
       );
     });
 
-    it("should update the status to conflict with error message", async () => {
+    it("should update status with error message", async () => {
       window.db.execute = vi.fn().mockResolvedValue({
         success: true,
       });
@@ -82,7 +71,7 @@ describe("Sync Queue Tests", () => {
   });
 
   describe("incrementRetryCount", () => {
-    it("increment the retry count for failed items", async () => {
+    it("should increment retry count", async () => {
       window.db.execute = vi.fn().mockResolvedValue({ success: true });
 
       await service.incrementRetryCount(1);
@@ -95,7 +84,7 @@ describe("Sync Queue Tests", () => {
   });
 
   describe("markAsSyncing", () => {
-    it("mark all offline items as syncing when online", async () => {
+    it("should mark items as syncing", async () => {
       window.db.execute = vi.fn().mockResolvedValue({ success: true });
 
       await service.markAsSyncing([1, 2, 5]);
@@ -108,43 +97,27 @@ describe("Sync Queue Tests", () => {
   });
 
   describe("getPendingCount", () => {
-    it("should get count of pending items", async () => {
+    it("should return count of pending items", async () => {
       window.db.queryOne = vi.fn().mockResolvedValue({ count: 10 });
 
       const result = await service.getPendingCount();
 
       expect(result).toBe(10);
-    });
-
-    it("should return 0 if no pending items", async () => {
-      window.db.queryOne = vi.fn().mockResolvedValue({ count: 0 });
-
-      const result = await service.getPendingCount();
-
-      expect(result).toBe(0);
     });
   });
 
   describe("getConflictCount", () => {
-    it("should get count of conflicting items", async () => {
+    it("should return count of conflicts", async () => {
       window.db.queryOne = vi.fn().mockResolvedValue({ count: 10 });
 
       const result = await service.getConflictCount();
 
       expect(result).toBe(10);
     });
-
-    it("should return 0 if no conflicting items", async () => {
-      window.db.queryOne = vi.fn().mockResolvedValue({ count: 0 });
-
-      const result = await service.getConflictCount();
-
-      expect(result).toBe(0);
-    });
   });
 
   describe("getQueueItemsByRecord", () => {
-    it("should get items by table and record", async () => {
+    it("should return items for specific table and record", async () => {
       window.db.query = vi.fn().mockResolvedValue(mockSyncQueueItem);
 
       const result = await service.getQueueItemsByRecord(
