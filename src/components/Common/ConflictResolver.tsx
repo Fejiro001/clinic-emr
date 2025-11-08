@@ -73,7 +73,7 @@ const ConflictResolver = ({ isOpen, onClose }: ConflictResolverProps) => {
         {loading ? (
           <p>Loading conflicts...</p>
         ) : conflicts.length === 0 ? (
-          <p>No conflicts to resolve! 🎉</p>
+          <p>No conflicts to resolve!</p>
         ) : (
           <div className="space-y-4">
             {conflicts.map((conflict) => (

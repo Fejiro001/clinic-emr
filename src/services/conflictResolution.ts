@@ -7,7 +7,7 @@ export class ConflictResolutionService {
   /**
    * Get all unresolved conflict from Supabase
    */
-  async getUnresolvedConflicts() {
+  async getUnresolvedConflicts(): Promise<SyncConflict[]> {
     const { data, error } = await supabase
       .from("sync_conflicts")
       .select("*")
@@ -50,27 +50,25 @@ export class ConflictResolutionService {
     choice: "local" | "remote",
     userId: string
   ): Promise<void> {
-    const { data: conflict, error: fetchError } = await supabase
+    const result = await supabase
       .from("sync_conflicts")
       .select("*")
       .eq("id", conflictId)
       .single();
+    const conflict = result.data as SyncConflict | null;
+    const fetchError = result.error;
 
     if (fetchError || !conflict) {
       throw new Error("Conflict not found");
     }
 
-    const typedConflict = conflict as SyncConflict;
-
     const dataToUse =
-      choice === "local"
-        ? typedConflict.local_version
-        : typedConflict.remote_version;
+      choice === "local" ? conflict.local_version : conflict.remote_version;
 
     const { error: updateError } = await supabase
-      .from(typedConflict.table_name)
+      .from(conflict.table_name)
       .update(dataToUse)
-      .eq("id", typedConflict.record_id);
+      .eq("id", conflict.record_id);
 
     if (updateError) throw updateError;
 
@@ -89,8 +87,8 @@ export class ConflictResolutionService {
 
     //   Find and remove the conflicting item from sync_queue
     const queueItems = await syncQueueService.getQueueItemsByRecord(
-      typedConflict.table_name,
-      typedConflict.record_id
+      conflict.table_name,
+      conflict.record_id
     );
 
     for (const item of queueItems) {

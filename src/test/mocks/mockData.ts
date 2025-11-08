@@ -43,5 +43,8 @@ export const mockConflict = {
   remote_version: { ...mockPatient, phone: "08075853868" },
   conflict_type: "field_mismatch",
   resolved: false,
-  timestamp: Date.now(),
+  resolution_choice: "",
+  resolved_by: null,
+  resolved_at: null,
+  timestamp: String(Date.now()),
 };
