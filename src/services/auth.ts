@@ -4,7 +4,7 @@ import { useSyncStore } from "../store/syncStore.js";
 import type { UserProfile, UserRole } from "../types/index.js";
 import { showToast } from "../utils/toast.js";
 
-const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+const INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
 interface LoginCredentials {
   email: string;

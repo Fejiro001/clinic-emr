@@ -88,7 +88,7 @@ const Sidebar = () => {
                   <li>
                     <Link
                       to={item.path}
-                      className={`sidebar_links ${location.pathname === item.path ? "bg-primary-800" : ""}`}
+                      className={`sidebar_links ${location.pathname === item.path ? "bg-primary-800 text-white" : ""}`}
                     >
                       <Icon size={20} />
                       <span>{item.label}</span>
@@ -103,15 +103,18 @@ const Sidebar = () => {
         <div className="mt-auto absolute inset-x-0 bottom-0 w-full border-t border-slate-400 pt-4 space-y-2">
           {/* Online status indicator */}
           <SyncStatusIndicator />
-          <button
-            onClick={() => {
-              setShowLogoutModal(true);
-            }}
-            className="sidebar_links w-full"
-          >
-            <LogOut size={20} />
-            <span>Logout</span>
-          </button>
+
+          <div className="p-3">
+            <button
+              onClick={() => {
+                setShowLogoutModal(true);
+              }}
+              className="!m-0 sidebar_links w-full"
+            >
+              <LogOut size={20} />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
     </>

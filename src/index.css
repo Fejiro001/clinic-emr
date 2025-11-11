@@ -55,7 +55,7 @@
   --color-bg-secondary: #f9fafb;
   --color-bg-tertiary: #f3f4f6;
 
-    /* Text Colors */
+  /* Text Colors */
   --color-text-primary: #111827;
   --color-text-secondary: #6b7280;
   --color-text-tertiary: #9ca3af;
@@ -95,8 +95,8 @@ button {
 
 /* SIDEBAR */
 .sidebar {
-  @apply bg-dark-bg text-white min-w-52 w-64 rounded-r-lg sticky h-screen top-0 left-0 flex flex-col shadow-lg;
+  @apply text-dark-bg bg-white min-w-52 w-64 rounded-r-lg sticky h-screen top-0 left-0 flex flex-col shadow-2xl;
 }
 .sidebar_links {
-  @apply flex items-center gap-3 px-4 py-3 hover:bg-primary-900 transition-colors cursor-pointer;
+  @apply flex items-center gap-3 m-3 p-2 rounded-md hover:bg-primary-800 hover:text-white transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-primary-900 outline-none;
 }
