@@ -80,12 +80,6 @@ export class AuthService {
       .single();
 
     if (error) {
-      console.error("Error fetching user profile:", {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code,
-      });
       return null;
     }
 
@@ -119,8 +113,7 @@ export class AuthService {
       const { data, error } = await supabase.auth.getSession();
       if (error) throw error;
       return data.session;
-    } catch (error) {
-      console.error("Error fetching session:", error);
+    } catch {
       return null;
     }
   }
@@ -134,8 +127,7 @@ export class AuthService {
       const { data, error } = await supabase.auth.refreshSession();
       if (error) throw error;
       return data.session;
-    } catch (error) {
-      console.error("Error refreshing session:", error);
+    } catch {
       return null;
     }
   }
@@ -168,8 +160,7 @@ export class AuthService {
       }
 
       return null;
-    } catch (error) {
-      console.error("Session check error:", error);
+    } catch {
       return null;
     }
   }
@@ -199,7 +190,6 @@ export class AuthService {
       const { isOnline } = useSyncStore.getState();
 
       if (isOnline) {
-        console.log("Online profile");
         // Try online validation first
         try {
           const { data, error } = await supabase.auth.setSession({
@@ -239,7 +229,6 @@ export class AuthService {
           useAuthStore.getState().setUser(cachedProfile);
           this.startInactivityTimer();
 
-          console.log("Cached profile");
           return {
             success: true,
             user: cachedProfile,
@@ -252,7 +241,6 @@ export class AuthService {
 
       return { success: false, reason: "no_cached_profile" };
     } catch (error) {
-      console.error("Session initialization error:", error);
       return { success: false, error };
     } finally {
       useAuthStore.getState().setLoading(false);

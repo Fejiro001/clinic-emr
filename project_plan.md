@@ -94,7 +94,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Create sync_conflicts table queries
 - [x] Build conflict resolution UI (show conflicts, let user choose)
 - [x] Implement auto-resolution rules (prefer_recent, prefer_remote, etc.)
-- [ ] Test conflict scenarios (edit same field offline, sync, resolve)
+- [x] Test conflict scenarios (edit same field offline, sync, resolve)
 
 ### 1.8 Retry Logic & Exponential Backoff (Week 4)
 
@@ -208,8 +208,10 @@ clinic-emr/
 │   │   ├── Layout/
 │   │   │   ├── Sidebar.tsx
 │   │   │   └── Header.tsx
-│   │   ├── Auth/
-│   │   │   └── LoginForm.tsx
+│   │   ├── Form/
+│   │   │   ├── FormError.tsx
+│   │   │   ├── FormLabel.tsx
+│   │   │   └── FormInput.tsx
 │   │   ├── Patients/
 │   │   │   ├── PatientList.tsx
 │   │   │   ├── PatientForm.tsx
@@ -226,11 +228,14 @@ clinic-emr/
 │   │   │   ├── OutpatientForm.tsx
 │   │   │   └── VisitDetail.tsx
 │   │   ├── Common/
-│   │   │   ├── LoadingSpinner.tsx
+│   │   │   ├── Preloader.tsx
 │   │   │   ├── ErrorMessage.tsx
-│   │   │   ├── SyncStatus.tsx
+│   │   │   ├── Breadcrumbs.tsx
+│   │   │   ├── SyncStatusIndicator.tsx
+│   │   │   ├── DataTable.tsx
 │   │   │   ├── Toast.tsx
 │   │   │   ├── Modal.tsx
+│   │   │   ├── Button.tsx
 │   │   │   ├── SearchBar.tsx
 │   │   │   ├── DataTable.tsx
 │   │   │   ├── ConflictResolver.tsx
@@ -247,7 +252,12 @@ clinic-emr/
 │   ├── services/
 │   │   ├── supabase.ts (Supabase client + auth)
 │   │   ├── sync.ts (Sync engine logic)
+│   │   ├── syncQueue.ts (Sync queue logic)
+│   │   ├── batchOperations.ts (Batch operations logic)
 │   │   ├── auth.ts (Auth helpers)
+│   │   ├── conflictRules.ts (Conflict rules definitions)
+│   │   ├── conflictDetection.ts (Conflict detection helpers)
+│   │   ├── conflictResolution.ts (Conflict resolution helpers)
 │   │   ├── patients.ts (Patient CRUD + duplicate detection)
 │   │   ├── inpatient.ts (Admission/discharge logic)
 │   │   ├── outpatient.ts (Visit CRUD)
@@ -255,7 +265,6 @@ clinic-emr/
 │   │   ├── conversion.ts (Outpatient → Inpatient)
 │   │   ├── medicalHistory.ts (Timeline queries)
 │   │   ├── auditLogs.ts (Audit log queries)
-│   │   ├── conflicts.ts (Conflict resolution)
 │   │   ├── validation.ts (All Zod schemas)
 │   │   └── dashboard.ts (Dashboard stats)
 │   ├── store/
@@ -272,13 +281,15 @@ clinic-emr/
 │   │   ├── queries.ts (All SQLite queries)
 │   │   └── indexes.ts (Create Indexes)
 │   ├── hooks/
-│   │   ├── useAuth.ts (Auth context hook)
+│   │   ├── useActivityTracker.ts (Inactivity logout)
 │   │   ├── useSyncStatus.ts (Sync status hook)
 │   │   ├── useOfflineMode.ts (Offline detection)
 │   │   ├── usePatientTimeline.ts (Patient history)
 │   │   ├── useConversion.ts (Admission conversion)
 │   │   ├── useConflicts.ts (Conflict detection/resolution)
 │   │   ├── usePagination.ts (Generic pagination)
+│   │   ├── useHasRole.ts (Role-based access)
+│   │   ├── useNetworkStatus.ts (Network status)
 │   │   └── useDebounce.ts (Search debounce)
 │   ├── utils/
 │   │   ├── dateUtils.ts (Date formatting, age calculation)
@@ -302,12 +313,12 @@ clinic-emr/
 │   │   └── sync.ts (Sync coordination)
 │   └── security.ts (Security utilities)
 ├── migrations/
-│   ├── 001_initial_schema.sql
-│   ├── 002_add_indexes.sql
-│   ├── 003_add_soft_deletes.sql
-│   ├── 004_add_audit_logs.sql
-│   ├── 005_add_sync_tables.sql
-│   └── 006_add_rls_policies.sql
+│   ├──
+│   ├──
+│   ├──
+│   ├──
+│   ├──
+│   └──
 ├── public/
 │   └── icon.png
 ├── .env.example
@@ -316,9 +327,10 @@ clinic-emr/
 ├── tsconfig.json
 ├── vite.config.ts
 ├── tailwind.config.ts
-├── electron-builder.json
-├── .eslintrc.json
-├── prettier.config.json
+├── tsconfig.app.json
+├── tsconfig.electron.json
+├── tsconfig.node.json
+├── eslint.config.js
 └── README.md
 ```
 

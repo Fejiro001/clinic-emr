@@ -50,7 +50,6 @@ const useNetworkStatus = () => {
 
     // Listen for offline event
     const handleOffline = () => {
-      console.log("Network: Offline");
       useSyncStore.getState().setOnline(false);
       useSyncStore.getState().setSyncStatus("offline");
 
@@ -72,10 +71,6 @@ const useNetworkStatus = () => {
 
       // Update network status if changed
       if (isConnected !== currentStatus) {
-        console.log(
-          "🔄 Network status changed:",
-          isConnected ? "Online" : "Offline"
-        );
         useSyncStore.getState().setOnline(isConnected);
 
         // Trigger sync if coming back online
@@ -89,7 +84,6 @@ const useNetworkStatus = () => {
 
     // Periodic checks for network (every 30 seconds)
     const intervalId = setInterval(() => {
-      console.log("30 seconds check");
       void checkAppConnectivity();
     }, 30000);
 
