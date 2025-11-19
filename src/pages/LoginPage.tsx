@@ -36,7 +36,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-primary-800 flex items-center justify-center p-4">
+    <section className="min-h-screen bg-primary-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         {/* Logo/Title */}
         <div className="text-center mb-8">
@@ -108,7 +108,7 @@ const LoginPage = () => {
           <p className="mt-1">Contact your administrator for access.</p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

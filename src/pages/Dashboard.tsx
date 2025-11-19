@@ -2,6 +2,7 @@ import { useSyncStore } from "../store/syncStore";
 import { batchOperationsService } from "../services/batchOperations";
 import { useState } from "react";
 import { syncQueueService } from "../services/syncQueue";
+import { Breadcrumbs } from "../components/Common";
 
 const Dashboard = () => {
   const [testResult, setTestResult] = useState<string>("");
@@ -28,10 +29,8 @@ const Dashboard = () => {
         },
       });
 
-      console.log("✅ Patient queued for sync:", patientId);
       setTestResult(`✅ Patient created: ${patientId} (${randomPhone})`);
     } catch (error) {
-      console.error("❌ Test failed:", error);
       setTestResult(
         `❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`
       );
@@ -56,8 +55,8 @@ const Dashboard = () => {
   const syncState = useSyncStore();
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+    <div className="space-y-4">
+      <Breadcrumbs>Dashboard</Breadcrumbs>
 
       {/* Test Button - Only runs when clicked */}
       <div className="bg-white p-4 rounded-lg shadow">
