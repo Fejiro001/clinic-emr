@@ -8,15 +8,86 @@ import { conflictDetectionService } from "./conflictDetection";
 
 const MAX_BATCH_SIZE = 50;
 const MAX_RETRY_COUNT = 5;
+const MAX_BACKOFF_MS = 5 * 60 * 1000; // 5 minutes
 
 // Syncing to Supabase
 export class SyncService {
   private isSyncing = false;
+  private retryTimeouts = new Map<number, NodeJS.Timeout>();
+
+  /**
+   * Calculate exponential backoff in milliseconds
+   */
+  private calculateBackoff(retryCount: number): number {
+    const backoffMs = Math.pow(2, retryCount) * 1000;
+    return Math.min(backoffMs, MAX_BACKOFF_MS);
+  }
+
+  /**
+   * Check if an item is ready to be retried
+   */
+  private isReadyToRetry(item: SyncQueueItem) {
+    if (!item.last_retry_at || item.retry_count === 0) {
+      return true;
+    }
+
+    const backoffMs = this.calculateBackoff(item.retry_count ?? 0);
+    const nextRetryTime = item.last_retry_at * 1000 + backoffMs;
+    const now = Date.now();
+
+    return now >= nextRetryTime;
+  }
+
+  /**
+   * Get time remaining until next retry (in seconds)
+   */
+  getNextRetryTime(item: SyncQueueItem): number | null {
+    if (!item.last_retry_at || item.retry_count === 0) {
+      return 0;
+    }
+
+    const backoffMs = this.calculateBackoff(item.retry_count ?? 0);
+    const nextRetryTime = item.last_retry_at * 1000 + backoffMs;
+    const now = Date.now();
+
+    if (now >= nextRetryTime) {
+      // Retry now
+      return 0;
+    }
+
+    return Math.ceil((nextRetryTime - now) / 1000);
+  }
+
+  /**
+   * Schedule a retry for a specific item after backoff period
+   */
+  private scheduleRetry(item: SyncQueueItem): void {
+    const itemId = item.id;
+    if (itemId == null) return;
+
+    const existingTimeout = this.retryTimeouts.get(itemId);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+
+    const backoffMs = this.calculateBackoff(item.retry_count ?? 0);
+
+    console.log(
+      `Scheduling retry for item ${String(itemId)} in ${String(backoffMs / 1000)}s (attempt ${String(item.retry_count ?? 0 + 1)}/${String(MAX_RETRY_COUNT)})`
+    );
+
+    const timeout = setTimeout(() => {
+      this.retryTimeouts.delete(itemId);
+      void this.syncAll();
+    }, backoffMs);
+
+    this.retryTimeouts.set(itemId, timeout);
+  }
 
   /**
    * Sync all pending items to Supabase
    */
-  async syncAll() {
+  async syncAll(force = false) {
     const { isOnline } = useSyncStore.getState();
 
     // Don't sync offline or already syncing
@@ -25,7 +96,6 @@ export class SyncService {
     try {
       this.isSyncing = true;
       useSyncStore.getState().setSyncStatus("syncing");
-      showToast.syncStarted();
 
       // Get pending items
       const pendingItems =
@@ -34,6 +104,27 @@ export class SyncService {
       if (pendingItems.length === 0) {
         useSyncStore.getState().setSyncStatus("synced");
         useSyncStore.getState().setLastSyncTime(Date.now());
+        return;
+      }
+
+      // Filter items that are ready to retry (unless forced)
+      const itemsToSync = force
+        ? pendingItems
+        : pendingItems.filter((item) => this.isReadyToRetry(item));
+
+      if (itemsToSync.length === 0) {
+        console.log("No items ready to retry yet (backoff period active)");
+        useSyncStore.getState().setSyncStatus("synced");
+
+        // Schedule retries for items still in backoff
+        pendingItems.forEach((item) => {
+          if (
+            (item.retry_count ?? 0) > 0 &&
+            (item.retry_count ?? 0) < MAX_RETRY_COUNT
+          ) {
+            this.scheduleRetry(item);
+          }
+        });
         return;
       }
 
@@ -62,7 +153,6 @@ export class SyncService {
         // Trigger UI to show conflict modal
         window.dispatchEvent(new CustomEvent("sync-conflicts-detected"));
 
-        console.log(`${String(conflictCount)} conflicts detected during sync`);
         return;
       }
 
@@ -73,22 +163,29 @@ export class SyncService {
 
       showToast.syncSuccess();
 
-      // If there are more items, sync again
+      // Check if there are more items to sync
       const remainingCount = await syncQueueService.getPendingCount();
       if (remainingCount > 0) {
-        const remainingItems = await syncQueueService.getAllPendingItems(10);
-        const hasRetryableItems = remainingItems.some(
-          (item) => (item.retry_count ?? 0) < MAX_RETRY_COUNT
+        const remainingItems =
+          await syncQueueService.getAllPendingItems(MAX_BATCH_SIZE);
+
+        // Check if any items are ready to retry now
+        const readyItems = remainingItems.filter((item) =>
+          this.isReadyToRetry(item)
         );
 
-        if (hasRetryableItems) {
+        if (readyItems.length > 0) {
           setTimeout(() => void this.syncAll(), 1000);
         } else {
-          useSyncStore
-            .getState()
-            .setSyncError(
-              `${String(remainingCount)} items failed after max retries`
-            );
+          // Schedule retry for items in backoff
+          remainingItems.forEach((item) => {
+            if (
+              (item.retry_count ?? 0) > 0 &&
+              (item.retry_count ?? 0) < MAX_RETRY_COUNT
+            ) {
+              this.scheduleRetry(item);
+            }
+          });
         }
       }
     } catch (error) {
@@ -296,7 +393,37 @@ export class SyncService {
       showToast.warning("Sync is already in progress");
       return;
     }
-    await this.syncAll();
+    await this.syncAll(true);
+  }
+
+  /**
+   * Retry all failed items (bypasses backoff)
+   */
+  async retryFailed(): Promise<void> {
+    if (this.isSyncing) {
+      showToast.warning("Sync is already in progress");
+      return;
+    }
+
+    const failedCount = await syncQueueService.getPendingCount();
+
+    if (failedCount === 0) {
+      showToast.info("No failed items to retry");
+      return;
+    }
+
+    showToast.info(`Retrying ${String(failedCount)} failed items...`);
+    await this.syncAll(true); // Force sync all failed items
+  }
+
+  /**
+   * Clear all scheduled retries
+   */
+  clearRetrySchedules(): void {
+    this.retryTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    this.retryTimeouts.clear();
   }
 
   /**

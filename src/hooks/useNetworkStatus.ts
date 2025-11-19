@@ -21,9 +21,45 @@ const useNetworkStatus = () => {
       const pendingCount = await syncQueueService.getPendingCount();
       useSyncStore.getState().setPendingCount(pendingCount);
 
-      // If online and has pending items, start syncing
+      // If online and has pending items, check if any failed items need to retry
       if (isOnline && pendingCount > 0) {
-        setTimeout(() => void syncService.syncAll(), 2000);
+        const pendingItems = await syncQueueService.getAllPendingItems(100);
+
+        // Count items that are ready to retry or have never been tried
+        const readyToSync = pendingItems.filter((item) => {
+          return (
+            item.retry_count === 0 || syncService.getNextRetryTime(item) === 0
+          );
+        });
+
+        const failedItems = pendingItems.filter(
+          (item) => item.status === "failed" && (item.retry_count ?? 0) > 0
+        );
+
+        if (readyToSync.length > 0) {
+          showToast.info(
+            `Syncing ${String(readyToSync.length)} pending items...`
+          );
+
+          setTimeout(() => void syncService.syncAll(), 2000);
+        } else if (failedItems.length > 0) {
+          console.log(
+            `App startup: ${String(failedItems.length)} items in backoff period`
+          );
+
+          // Schedule retries for items still in backoff
+          failedItems.forEach((item) => {
+            const nextRetryTime = syncService.getNextRetryTime(item);
+            if (nextRetryTime && nextRetryTime > 0) {
+              console.log(
+                `Scheduled retry for item ${String(item.id)} in ${String(nextRetryTime)}s`
+              );
+            }
+          });
+
+          // Still trigger sync to set up the retry schedules
+          setTimeout(() => void syncService.syncAll(), 2000);
+        }
       }
     };
 
@@ -53,7 +89,12 @@ const useNetworkStatus = () => {
       useSyncStore.getState().setOnline(false);
       useSyncStore.getState().setSyncStatus("offline");
 
-      showToast.warning("You are offline. Changes will be synced when reconnected.");
+      showToast.warning(
+        "You are offline. Changes will be synced when reconnected."
+      );
+
+      // Clear any scheduled retries
+      syncService.clearRetrySchedules();
 
       if (syncTimeout) {
         clearTimeout(syncTimeout);
@@ -91,6 +132,11 @@ const useNetworkStatus = () => {
       unsubscribeOnline();
       unsubscribeOffline();
       clearInterval(intervalId);
+      syncService.clearRetrySchedules();
+
+      if (syncTimeout) {
+        clearTimeout(syncTimeout);
+      }
     };
   }, []);
 };

@@ -21,9 +21,9 @@ const ProtectedRoute = ({
     return <Preloader />;
   }
 
-  if (requiredAuth && !isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+  // if (requiredAuth && !isAuthenticated) {
+  //   return <Navigate to="/login" state={{ from: location }} replace />;
+  // }
   // Check role-based access
   if (allowedRoles && user) {
     const hasRequiredRole = allowedRoles.includes(user.role);
