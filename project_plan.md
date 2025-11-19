@@ -98,15 +98,15 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 ### 1.8 Retry Logic & Exponential Backoff (Week 4)
 
-- [ ] Implement retry counter in sync_queue
-- [ ] Calculate exponential backoff (2^n seconds, max 5 min)
-- [ ] Implement automatic retry on app startup if failed syncs exist
-- [ ] Build "retry" button in UI for manual retry
+- [x] Implement retry counter in sync_queue
+- [x] Calculate exponential backoff (2^n seconds, max 5 min)
+- [x] Implement automatic retry on app startup if failed syncs exist
+- [x] Build "retry" button in UI for manual retry
 - [ ] Test retry scenarios (network timeout, server error, then recovery)
 
 ### 1.9 Patient Registry (Week 5)
 
-- [ ] Create patient registry list page (view/search only)
+- [x] Create patient registry list page (view/search only)
 - [ ] Implement pagination (infinite scroll, 50 items/page)
 - [ ] Build search by name/phone/DOB
 - [ ] Create patient detail view with medical history
@@ -313,12 +313,12 @@ clinic-emr/
 │   │   └── sync.ts (Sync coordination)
 │   └── security.ts (Security utilities)
 ├── migrations/
-│   ├──
-│   ├──
-│   ├──
-│   ├──
-│   ├──
-│   └──
+│   ├── 001_initial_schema.sql
+│   ├── 002_add_indexes.sql
+│   ├── 003_add_soft_deletes.sql
+│   ├── 004_add_audit_logs.sql
+│   ├── 005_add_sync_tables.sql
+│   └── 006_add_rls_policies.sql
 ├── public/
 │   └── icon.png
 ├── .env.example
@@ -860,7 +860,7 @@ tribe_nationality (TEXT)
 next_of_kin (TEXT)
 relationship_to_patient (TEXT)
 address_next_of_kin (TEXT)
-clinic_id (UUID, FK)
+unit_number (TEXT)
 created_by (UUID, FK to Users) -- Who created this patient
 updated_by (UUID, FK to Users) -- Who last updated
 version (INT DEFAULT 1) -- Optimistic locking
@@ -890,7 +890,7 @@ prov_diagnosis (TEXT, NOT NULL)
 final_diagnosis (TEXT, nullable) -- Set on discharge
 date_of_admission (DATE, NOT NULL)
 date_of_discharge (DATE, nullable) -- Set when discharged
-clinic_id (UUID, FK)
+unit_number (TEXT)
 created_by (UUID, FK to Users)
 updated_by (UUID, FK to Users)
 version (INT DEFAULT 1)
@@ -940,7 +940,7 @@ diagnosis (TEXT, NOT NULL)
 treatment (TEXT, NOT NULL)
 notes (TEXT, nullable)
 doctor_id (UUID, FK to Users, NOT NULL)
-clinic_id (UUID, FK)
+unit_number (TEXT)
 created_by (UUID, FK to Users)
 updated_by (UUID, FK to Users)
 version (INT DEFAULT 1)
