@@ -16,7 +16,7 @@ import { SyncStatusIndicator } from "../Common";
 
 const navItems = [
   {
-    path: "/dashboard",
+    path: "/",
     label: "Dashboard",
     icon: Home,
     roles: ["doctor", "secretary", "nurse", "admin"],
@@ -28,13 +28,13 @@ const navItems = [
     roles: ["doctor", "secretary", "nurse", "admin"],
   },
   {
-    path: "/inpatient",
+    path: "/patients/inpatient",
     label: "Inpatient",
     icon: Hospital,
     roles: ["doctor", "nurse", "admin"],
   },
   {
-    path: "/outpatient",
+    path: "/patients/outpatient",
     label: "Outpatient",
     icon: Stethoscope,
     roles: ["doctor", "secretary", "admin"],
@@ -72,35 +72,36 @@ const Sidebar = () => {
 
       <aside className="sidebar">
         <div className="border-b border-b-gray-400 flex items-center gap-2 px-4 py-6">
-          <h1 className="text-xl font-bold">Clinic EMR</h1>
+          <h1 className="text-xl font-bold">Celian Clinic EMR</h1>
         </div>
 
-        <nav>
+        <nav className="overflow-y-auto">
           <ul>
             {navItems.map((item) => {
               const Icon = item.icon;
 
               return (
-                <RoleGuard
-                  allowedRoles={item.roles as UserRole[]}
-                  key={item.path}
-                >
+                // <RoleGuard
+                //   allowedRoles={item.roles as UserRole[]}
+                //   key={item.path}
+                // >
                   <li>
                     <Link
                       to={item.path}
+                      title={item.label}
                       className={`sidebar_links ${location.pathname === item.path ? "bg-primary-800 text-white" : ""}`}
                     >
                       <Icon size={20} />
                       <span>{item.label}</span>
                     </Link>
                   </li>
-                </RoleGuard>
+                // </RoleGuard>
               );
             })}
           </ul>
         </nav>
 
-        <div className="mt-auto absolute inset-x-0 bottom-0 w-full border-t border-slate-400 pt-4 space-y-2">
+        <div className="mt-auto  inset-x-0 bottom-0 w-full border-t border-slate-400 pt-4 space-y-2">
           {/* Online status indicator */}
           <SyncStatusIndicator />
 
@@ -109,7 +110,7 @@ const Sidebar = () => {
               onClick={() => {
                 setShowLogoutModal(true);
               }}
-              className="!m-0 sidebar_links w-full"
+              className="logout"
             >
               <LogOut size={20} />
               <span>Logout</span>
