@@ -60,7 +60,10 @@ export class BatchOperationsService {
   /**
    * Insert record to local database
    */
-  private async insertLocal(table: string, data: Record<string, unknown>): Promise<void> {
+  private async insertLocal(
+    table: string,
+    data: Record<string, unknown>
+  ): Promise<void> {
     const columns = Object.keys(data);
     const values = Object.values(data);
     const placeholders = columns.map(() => "?").join(", ");
@@ -89,7 +92,7 @@ export class BatchOperationsService {
     await window.db.execute(
       `UPDATE ${table}
         SET ${updates}, updated_at = datetime('now')
-        WHERE id = ?`,
+        WHERE id = ? AND deleted_at IS NULL`,
       values
     );
 

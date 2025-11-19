@@ -78,3 +78,11 @@ export interface BatchWriteOperation {
   data: Record<string, unknown>;
   recordId: string;
 }
+
+export interface FailedItem {
+  id: number;
+  table_name: string;
+  retry_count: number;
+  error_message?: string;
+  nextRetry?: number;
+}
