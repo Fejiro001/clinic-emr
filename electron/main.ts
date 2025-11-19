@@ -1,11 +1,12 @@
 import { app, BrowserWindow } from "electron";
-import path from "path";
+import path, { join } from "path";
 import { fileURLToPath } from "url";
 import { setupDatabaseIPC } from "./ipc/database.js";
 import { setupAuthIPC } from "./ipc/auth.js";
 import { setupNetworkIPC } from "./ipc/network.js";
 import { initDatabase } from "../src/db/database.js";
 import { runMigrations } from "../src/db/migrations.js";
+import { existsSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,12 +56,27 @@ function initializeDatabase() {
   try {
     const userDataPath = app.getPath("userData");
     const dbPath = path.join(userDataPath, "clinic-emr.db");
+    console.log(`The database path: ${dbPath}`);
 
     // Initialize SQLite
     const db = initDatabase(dbPath);
 
+    let migrationsDir: string;
+
+    if (app.isPackaged) {
+      migrationsDir = join(process.resourcesPath, "migrations");
+    } else {
+      migrationsDir = join(__dirname, "../migrations");
+
+      if (!existsSync(migrationsDir)) {
+        migrationsDir = join(process.cwd(), "migrations");
+      }
+    }
+
+    console.log("Migrations directory:", migrationsDir);
+
     // Run migrations
-    runMigrations(db);
+    runMigrations(db, migrationsDir);
   } catch (error) {
     console.error("Database initialization failed", error);
     throw error;

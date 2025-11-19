@@ -80,6 +80,13 @@
       "dist-electron/**/*",
       "node_modules/better-sqlite3/**/*"
     ],
+    "extraFiles": [
+      {
+        "from": "migrations",
+        "to": "migrations",
+        "filter": "**/*.sql"
+      }
+    ],
     "directories": {
       "buildResources": "public"
     },

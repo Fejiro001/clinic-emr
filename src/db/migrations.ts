@@ -1,6 +1,8 @@
 import type Database from "better-sqlite3";
-import { createTables } from "./schema.js";
-import { createIndexes } from "./indexes.js";
+// import { createTables } from "./schema.js";
+// import { createIndexes } from "./indexes.js";
+import { existsSync, readdirSync, readFileSync } from "fs";
+import { join } from "path";
 
 interface Migration {
   id: number;
@@ -18,22 +20,71 @@ export function setupMigrations(db: Database.Database): void {
   `);
 }
 
-export function runMigrations(db: Database.Database): void {
+/**
+ * Execute SQL from migration files
+ */
+function executeSQLFiles(db: Database.Database, filepath: string): void {
+  const sql = readFileSync(filepath, "utf-8");
+
+  const statements = sql
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0 && !s.startsWith("--"));
+
+  for (const statement of statements) {
+    try {
+      db.exec(statement);
+    } catch (error) {
+      console.error(
+        `Error executing statement: ${statement.substring(0, 50)}...`
+      );
+      throw error;
+    }
+  }
+}
+
+export function runMigrations(
+  db: Database.Database,
+  migrationsDir?: string
+): void {
   console.log("Running migrations");
 
   setupMigrations(db);
 
-  const migrations = [
-    {
-      id: 1,
-      name: "001_initial_schema",
-      run: () => {
-        createTables(db);
-        createIndexes(db);
-      },
-    },
-    // Add more migrations here as needed
-  ];
+  const migrations: {
+    id: number;
+    name: string;
+    run: () => void;
+  }[] = [];
+
+  if (migrationsDir && existsSync(migrationsDir)) {
+    console.log(`Loading migrations from ${migrationsDir}`);
+
+    const files = readdirSync(migrationsDir)
+      .filter((f) => f.endsWith(".sql"))
+      .sort();
+
+    for (const file of files) {
+      const match = /^(\d+)_(.+)\.sql$/.exec(file);
+      if (match) {
+        const id = parseInt(match[1], 10);
+        const name = match[0].replace(".sql", "");
+        const filePath = join(migrationsDir, file);
+
+        if (!migrations.find((m) => m.id === id)) {
+          migrations.push({
+            id,
+            name,
+            run: () => {
+              executeSQLFiles(db, filePath);
+            },
+          });
+        }
+      }
+    }
+  }
+
+  migrations.sort((a, b) => a.id - b.id);
 
   const appliedMigrations = db
     .prepare("SELECT name FROM migrations")
@@ -43,7 +94,7 @@ export function runMigrations(db: Database.Database): void {
 
   for (const migration of migrations) {
     if (!appliedNames.has(migration.name)) {
-      console.log(`Running migartion: ${migration.name}`);
+      console.log(`Running migration: ${migration.name}`);
 
       try {
         migration.run();
