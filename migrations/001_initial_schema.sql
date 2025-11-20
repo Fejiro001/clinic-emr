@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS patients (
     id TEXT PRIMARY KEY,
+    unit_number TEXT,
     surname TEXT NOT NULL,
     other_names TEXT NOT NULL,
     date_of_birth TEXT NOT NULL,
@@ -14,7 +15,6 @@ CREATE TABLE IF NOT EXISTS patients (
     next_of_kin TEXT,
     relationship_to_patient TEXT,
     address_next_of_kin TEXT,
-    clinic_id TEXT,
     created_by TEXT,
     updated_by TEXT,
     version INTEGER DEFAULT 1,
@@ -24,12 +24,11 @@ CREATE TABLE IF NOT EXISTS patients (
     synced_at TEXT
 );
 
-CREATE TABLE IF NOT EXISTS     console.log("Migrations directory:", migrationsDir);
- (
+CREATE TABLE IF NOT EXISTS inpatient_records (
     id TEXT PRIMARY KEY,
     patient_id TEXT NOT NULL,
-    related_outpatient_visit_id TEXT,
     unit_number TEXT,
+    related_outpatient_visit_id TEXT,
     ward TEXT NOT NULL,
     consultant_id TEXT,
     code_no TEXT,
@@ -37,7 +36,6 @@ CREATE TABLE IF NOT EXISTS     console.log("Migrations directory:", migrationsDi
     final_diagnosis TEXT,
     date_of_admission TEXT NOT NULL,
     date_of_discharge TEXT,
-    clinic_id TEXT,
     created_by TEXT,
     updated_by TEXT,
     version INTEGER DEFAULT 1,
@@ -68,6 +66,7 @@ CREATE TABLE IF NOT EXISTS operations (
 CREATE TABLE IF NOT EXISTS outpatient_visits (
     id TEXT PRIMARY KEY,
     patient_id TEXT NOT NULL,
+    unit_number TEXT,
     visit_date TEXT NOT NULL,
     visit_time TEXT NOT NULL,
     history TEXT NOT NULL,
@@ -75,7 +74,6 @@ CREATE TABLE IF NOT EXISTS outpatient_visits (
     treatment TEXT NOT NULL,
     notes TEXT,
     doctor_id TEXT NOT NULL,
-    clinic_id TEXT,
     created_by TEXT,
     updated_by TEXT,
     version INTEGER DEFAULT 1,
@@ -113,29 +111,23 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     synced INTEGER DEFAULT 0
 );
 
--- Patients
-CREATE INDEX IF NOT EXISTS idx_patient_phone ON patients(phone) WHERE deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_patient_identity ON patients(surname, other_names, date_of_birth) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_patient_phone ON patients(phone) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_patient_identity ON patients(surname, other_names, date_of_birth) WHERE deleted_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_patients_created_at ON patients(created_at);
 CREATE INDEX IF NOT EXISTS idx_patients_updated_at ON patients(updated_at);
 
--- Inpatient
 CREATE INDEX IF NOT EXISTS idx_inpatient_patient_id ON inpatient_records(patient_id);
 CREATE INDEX IF NOT EXISTS idx_inpatient_admission_date ON inpatient_records(date_of_admission);
 CREATE INDEX IF NOT EXISTS idx_inpatient_ward ON inpatient_records(ward);
 
--- Operations
 CREATE INDEX IF NOT EXISTS idx_operations_inpatient ON operations(inpatient_record_id);
 CREATE INDEX IF NOT EXISTS idx_operations_date ON operations(operation_date);
 
--- Outpatient
 CREATE INDEX IF NOT EXISTS idx_outpatient_patient_id ON outpatient_visits(patient_id);
 CREATE INDEX IF NOT EXISTS idx_outpatient_visit_date ON outpatient_visits(visit_date);
 
--- Sync Queue
 CREATE INDEX IF NOT EXISTS idx_sync_status ON sync_queue(status);
 CREATE INDEX IF NOT EXISTS idx_sync_retry ON sync_queue(status, retry_count);
 
--- Audit Log
 CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
 CREATE INDEX IF NOT EXISTS idx_audit_table_record ON audit_logs(table_name, record_id);

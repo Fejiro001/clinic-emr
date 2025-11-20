@@ -1,1 +1,0 @@
-ALTER TABLE inpatient_records DROP COLUMN clinic_id;

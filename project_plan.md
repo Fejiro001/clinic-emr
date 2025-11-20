@@ -890,7 +890,6 @@ prov_diagnosis (TEXT, NOT NULL)
 final_diagnosis (TEXT, nullable) -- Set on discharge
 date_of_admission (DATE, NOT NULL)
 date_of_discharge (DATE, nullable) -- Set when discharged
-unit_number (TEXT)
 created_by (UUID, FK to Users)
 updated_by (UUID, FK to Users)
 version (INT DEFAULT 1)

@@ -26,10 +26,8 @@ export function setupMigrations(db: Database.Database): void {
 function executeSQLFiles(db: Database.Database, filepath: string): void {
   const sql = readFileSync(filepath, "utf-8");
 
-  const statements = sql
-    .split(";")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0 && !s.startsWith("--"));
+  const statements = sql.split(";").map((s) => s.trim());
+  console.log(statements);
 
   for (const statement of statements) {
     try {
