@@ -1,6 +1,6 @@
 import { useSyncStore } from "../store/syncStore";
 import type { BatchWriteOperation } from "../types";
-import { syncService } from "./sync";
+import { pushSyncService } from "./pushSync";
 import { syncQueueService } from "./syncQueue";
 
 export class BatchOperationsService {
@@ -26,7 +26,7 @@ export class BatchOperationsService {
       // If online sync immediately, will be implemented in a sync service
       if (isOnline) {
         console.log("Online - Sync will begin");
-        void syncService.syncNow();
+        void pushSyncService.syncNow();
       } else {
         console.log("Offline - queued for later sync");
       }

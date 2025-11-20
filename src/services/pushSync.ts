@@ -11,7 +11,7 @@ const MAX_RETRY_COUNT = 5;
 const MAX_BACKOFF_MS = 5 * 60 * 1000; // 5 minutes
 
 // Syncing to Supabase
-export class SyncService {
+export class PushSyncService {
   private isSyncing = false;
   private retryTimeouts = new Map<number, NodeJS.Timeout>();
 
@@ -485,4 +485,4 @@ export class SyncService {
   }
 }
 
-export const syncService = new SyncService();
+export const pushSyncService = new PushSyncService();

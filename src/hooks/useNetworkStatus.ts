@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSyncStore } from "../store/syncStore";
-import { syncService } from "../services/sync";
+import { pushSyncService } from "../services/pushSync";
 import { syncQueueService } from "../services/syncQueue";
 import { authService } from "../services/auth";
 import { showToast } from "../utils/toast";
@@ -28,7 +28,8 @@ const useNetworkStatus = () => {
         // Count items that are ready to retry or have never been tried
         const readyToSync = pendingItems.filter((item) => {
           return (
-            item.retry_count === 0 || syncService.getNextRetryTime(item) === 0
+            item.retry_count === 0 ||
+            pushSyncService.getNextRetryTime(item) === 0
           );
         });
 
@@ -41,7 +42,7 @@ const useNetworkStatus = () => {
             `Syncing ${String(readyToSync.length)} pending items...`
           );
 
-          setTimeout(() => void syncService.syncAll(), 2000);
+          setTimeout(() => void pushSyncService.syncAll(), 2000);
         } else if (failedItems.length > 0) {
           console.log(
             `App startup: ${String(failedItems.length)} items in backoff period`
@@ -49,7 +50,7 @@ const useNetworkStatus = () => {
 
           // Schedule retries for items still in backoff
           failedItems.forEach((item) => {
-            const nextRetryTime = syncService.getNextRetryTime(item);
+            const nextRetryTime = pushSyncService.getNextRetryTime(item);
             if (nextRetryTime && nextRetryTime > 0) {
               console.log(
                 `Scheduled retry for item ${String(item.id)} in ${String(nextRetryTime)}s`
@@ -58,7 +59,7 @@ const useNetworkStatus = () => {
           });
 
           // Still trigger sync to set up the retry schedules
-          setTimeout(() => void syncService.syncAll(), 2000);
+          setTimeout(() => void pushSyncService.syncAll(), 2000);
         }
       }
     };
@@ -79,7 +80,7 @@ const useNetworkStatus = () => {
 
         if (syncTimeout) clearTimeout(syncTimeout);
         syncTimeout = setTimeout(() => {
-          void syncService.syncOnOnline();
+          void pushSyncService.syncOnOnline();
         }, 1500);
       }
     };
@@ -94,7 +95,7 @@ const useNetworkStatus = () => {
       );
 
       // Clear any scheduled retries
-      syncService.clearRetrySchedules();
+      pushSyncService.clearRetrySchedules();
 
       if (syncTimeout) {
         clearTimeout(syncTimeout);
@@ -132,7 +133,7 @@ const useNetworkStatus = () => {
       unsubscribeOnline();
       unsubscribeOffline();
       clearInterval(intervalId);
-      syncService.clearRetrySchedules();
+      pushSyncService.clearRetrySchedules();
 
       if (syncTimeout) {
         clearTimeout(syncTimeout);

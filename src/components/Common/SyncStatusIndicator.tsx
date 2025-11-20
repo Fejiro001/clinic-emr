@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSyncStore } from "../../store/syncStore";
-import { syncService } from "../../services/sync";
+import { pushSyncService } from "../../services/pushSync";
 import { syncQueueService } from "../../services/syncQueue";
 import type { FailedItem } from "../../types";
 import {
@@ -29,11 +29,11 @@ const SyncStatusIndicator = () => {
       const failed = items
         .filter((item) => item.status === "failed")
         .map((item) => ({
-          id: item.id!,
+          id: item.id,
           table_name: item.table_name,
           retry_count: item.retry_count ?? 0,
           error_message: item.error_message,
-          nextRetry: syncService.getNextRetryTime(item) ?? 0,
+          nextRetry: pushSyncService.getNextRetryTime(item) ?? 0,
         }));
 
       setFailedItems(failed);
@@ -154,7 +154,7 @@ const SyncStatusIndicator = () => {
     e.stopPropagation();
     setIsRetrying(true);
     try {
-      await syncService.retryFailed();
+      await pushSyncService.retryFailed();
     } finally {
       setIsRetrying(false);
       if (showDetails) {
@@ -163,11 +163,11 @@ const SyncStatusIndicator = () => {
             const failed = items
               .filter((item) => item.status === "failed")
               .map((item) => ({
-                id: item.id!,
+                id: item.id,
                 table_name: item.table_name,
                 retry_count: item.retry_count ?? 0,
                 error_message: item.error_message,
-                nextRetry: syncService.getNextRetryTime(item) ?? 0,
+                nextRetry: pushSyncService.getNextRetryTime(item) ?? 0,
               }));
             setFailedItems(failed);
           });
@@ -181,7 +181,7 @@ const SyncStatusIndicator = () => {
     if (!isOnline) return;
     setIsRetrying(true);
     try {
-      await syncService.syncNow();
+      await pushSyncService.syncNow();
     } finally {
       setIsRetrying(false);
     }
