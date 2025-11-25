@@ -4,6 +4,7 @@ import Store from "electron-store";
 const store = new Store();
 
 const STORAGE_KEY = "auth_token_encrypted";
+const REFRESH_STORAGE_KEY = "auth_refresh_token_encrypted";
 const USER_PROFILE_KEY = "user_profile_encrypted";
 /**
  * Setup IPC handlers for authentication
@@ -12,45 +13,67 @@ const USER_PROFILE_KEY = "user_profile_encrypted";
  */
 export function setupAuthIPC(): void {
   // Save encrypted auth token to secure storage
-  ipcMain.handle("auth:save-token", (_event, token: string) => {
-    try {
-      if (!safeStorage.isEncryptionAvailable()) {
-        console.warn("Encryption not available, storing token as a plain text");
-        store.set(STORAGE_KEY, token);
+  ipcMain.handle(
+    "auth:save-token",
+    (_event, access_token: string, refresh_token: string) => {
+      try {
+        if (!safeStorage.isEncryptionAvailable()) {
+          console.warn(
+            "Encryption not available, storing token as a plain text"
+          );
+          store.set(STORAGE_KEY, access_token);
+          store.set(REFRESH_STORAGE_KEY, refresh_token);
+          return { success: true };
+        }
+
+        const encryptedAccessToken = safeStorage.encryptString(access_token);
+        const encryptedRefreshToken = safeStorage.encryptString(refresh_token);
+
+        store.set(STORAGE_KEY, encryptedAccessToken.toString("base64"));
+        store.set(
+          REFRESH_STORAGE_KEY,
+          encryptedRefreshToken.toString("base64")
+        );
+
         return { success: true };
+      } catch (error) {
+        console.error("Error saving token:", error);
+        return {
+          success: false,
+          error:
+            error instanceof Error ? error.message : "Failed to save token",
+        };
       }
-
-      const encryptedToken = safeStorage.encryptString(token);
-
-      store.set(STORAGE_KEY, encryptedToken.toString("base64"));
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error saving token:", error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to save token",
-      };
     }
-  });
+  );
 
   // Retrieve and decrypt auth token from secure storage
   ipcMain.handle("auth:get-token", () => {
     try {
       const storedData = store.get(STORAGE_KEY) as string | undefined;
-      if (!storedData) {
+      const storedRefreshData = store.get(REFRESH_STORAGE_KEY) as
+        | string
+        | undefined;
+
+      if (!storedData || !storedRefreshData) {
         return null;
       }
 
       if (!safeStorage.isEncryptionAvailable()) {
         // plain text fallback
-        return storedData;
+        return { access_token: storedData, refresh_token: storedRefreshData };
       }
 
       const buffer = Buffer.from(storedData, "base64");
-      const decryptedToken = safeStorage.decryptString(buffer);
+      const refreshBuffer = Buffer.from(storedRefreshData, "base64");
 
-      return decryptedToken;
+      const decryptedToken = safeStorage.decryptString(buffer);
+      const decryptedRefreshToken = safeStorage.decryptString(refreshBuffer);
+
+      return {
+        access_token: decryptedToken,
+        refresh_token: decryptedRefreshToken,
+      };
     } catch (error) {
       console.error("Error retrieving token:", error);
       return null;

@@ -25,10 +25,7 @@ export class BatchOperationsService {
 
       // If online sync immediately, will be implemented in a sync service
       if (isOnline) {
-        console.log("Online - Sync will begin");
         void pushSyncService.syncNow();
-      } else {
-        console.log("Offline - queued for later sync");
       }
 
       return true;

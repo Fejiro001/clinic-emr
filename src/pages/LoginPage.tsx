@@ -29,14 +29,14 @@ const LoginPage = () => {
     const result = await authService.login(data);
 
     if (result.success) {
-      void navigate("/dashboard");
+      void navigate("/");
     } else {
       setError(result.error ?? "Login failed. Please check your credentials");
     }
   };
 
   return (
-    <section className="min-h-screen bg-primary-800 flex items-center justify-center p-4">
+    <section className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         {/* Logo/Title */}
         <div className="text-center mb-8">

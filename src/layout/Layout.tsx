@@ -1,18 +1,17 @@
-import { Outlet } from "react-router";
 import { Header, Sidebar } from "../components/Layout/index";
 
-const Layout = () => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex">
       {/* Header */}
       <Sidebar />
 
-      <div className="bg-gray-100 flex-1">
+      <div className="flex-1">
         <Header />
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white">
-          <Outlet />
+        <main className="layout_main_content">
+          {children}
         </main>
       </div>
     </div>

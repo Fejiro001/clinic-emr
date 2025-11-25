@@ -13,11 +13,10 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route
-          path="/"
           element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
+            <Layout>
+              <ProtectedRoute />
+            </Layout>
           }
         >
           <Route index path="/" element={<Dashboard />} />

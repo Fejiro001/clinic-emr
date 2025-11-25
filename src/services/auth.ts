@@ -33,15 +33,24 @@ export class AuthService {
       });
 
       if (error) {
-        showToast.error(error.message || "Invalid email or password");
+        showToast.error(
+          error.message.includes("fetch")
+            ? "Unable to login"
+            : "Invalid email or password"
+        );
         return {
           success: false,
-          error: error.message || "Invalid email or password",
+          error: error.message.includes("fetch")
+            ? "Unable to login"
+            : "Invalid email or password",
         };
       }
 
       // Save encrypted token via IPC
-      await window.auth.saveToken(data.session.access_token);
+      await window.auth.saveToken(
+        data.session.access_token,
+        data.session.refresh_token
+      );
 
       const profile = await this.getUserProfile(data.user.id);
 
@@ -180,10 +189,10 @@ export class AuthService {
         return { success: false, reason: "no_token" };
       }
 
-      // Try to get saved token
-      const savedToken = await window.auth.getToken();
+      // Try to get saved tokens
+      const { access_token, refresh_token } = await window.auth.getToken();
 
-      if (!savedToken) {
+      if (!access_token || !refresh_token) {
         return { success: false, reason: "invalid_token" };
       }
 
@@ -193,8 +202,8 @@ export class AuthService {
         // Try online validation first
         try {
           const { data, error } = await supabase.auth.setSession({
-            access_token: savedToken,
-            refresh_token: savedToken,
+            access_token: access_token,
+            refresh_token: refresh_token,
           });
 
           if (!error && data.session) {
@@ -210,6 +219,8 @@ export class AuthService {
 
               return { success: true, user: profile, source: "online" };
             }
+          } else {
+            console.error("Online session validation error:", error);
           }
         } catch (onlineError) {
           console.error(

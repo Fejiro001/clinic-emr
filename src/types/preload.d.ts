@@ -22,9 +22,13 @@ declare global {
 
     auth: {
       saveToken: (
-        token: string
+        access_token: string,
+        refresh_token: string
       ) => Promise<{ success: boolean; error?: string }>;
-      getToken: () => Promise<string | null>;
+      getToken: () => Promise<{
+        access_token: string | null;
+        refresh_token: string | null;
+      }>;
       clearToken: () => Promise<{ success: boolean }>;
       hasToken: () => Promise<boolean>;
       saveUserProfile: (

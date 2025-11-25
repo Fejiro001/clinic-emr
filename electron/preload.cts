@@ -31,7 +31,7 @@ contextBridge.exposeInMainWorld("db", {
 
 contextBridge.exposeInMainWorld("auth", {
   // Auth methods
-  saveToken: (token: string) => ipcRenderer.invoke("auth:save-token", token),
+  saveToken: (access_token: string, refresh_token: string) => ipcRenderer.invoke("auth:save-token", access_token, refresh_token),
   getToken: () => ipcRenderer.invoke("auth:get-token"),
   clearToken: () => ipcRenderer.invoke("auth:clear-token"),
   hasToken: () => ipcRenderer.invoke("auth:has-token"),

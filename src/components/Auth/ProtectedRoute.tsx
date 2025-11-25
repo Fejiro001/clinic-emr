@@ -1,16 +1,14 @@
-import { Navigate, useLocation } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuthStore } from "../../store/authStore";
 import type { UserRole } from "../../types";
 import { Preloader } from "../Common";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
   allowedRoles?: UserRole[];
   requiredAuth?: boolean;
 }
 
 const ProtectedRoute = ({
-  children,
   allowedRoles,
   requiredAuth = true,
 }: ProtectedRouteProps) => {
@@ -21,9 +19,9 @@ const ProtectedRoute = ({
     return <Preloader />;
   }
 
-  // if (requiredAuth && !isAuthenticated) {
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
+  if (requiredAuth && !isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
   // Check role-based access
   if (allowedRoles && user) {
     const hasRequiredRole = allowedRoles.includes(user.role);
@@ -58,7 +56,11 @@ const ProtectedRoute = ({
     }
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 };
 
 export default ProtectedRoute;
