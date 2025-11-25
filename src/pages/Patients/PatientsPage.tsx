@@ -1,16 +1,68 @@
-import { useEffect } from "react";
-import { Breadcrumbs } from "../../components/Common";
-import { usePatientStore } from "../../store/patientStore";
+import { useEffect, useMemo } from "react";
+import { type ColumnDef } from "@tanstack/react-table";
+import type { Patient } from "../../types/supabase";
+import { useCustomTable, usePagination } from "../../hooks";
 import { patientsService } from "../../services/patients";
+import { Breadcrumbs } from "../../components/Common";
+import { MainTable, Pagination } from "../../components/TableComponents";
+import { patientQueries } from "../../services/queries";
 
 const PatientsPage = () => {
-  const { isLoading, error, patients } = usePatientStore();
+  const {
+    data: patients,
+    loading,
+    error,
+    pagination,
+    nextPage,
+    prevPage,
+    goToPage,
+    firstPage,
+    lastPage,
+  } = usePagination({
+    fetchFn: patientQueries.getAll,
+    countFn: patientQueries.getCount,
+    initialLimit: 20,
+    initialPage: 1,
+  });
 
   useEffect(() => {
     void patientsService.fetchAllPatients();
   }, []);
 
-  if (isLoading) {
+  const columns = useMemo<ColumnDef<Patient>[]>(
+    () => [
+      {
+        accessorKey: "surname",
+        header: "Surname",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "other_names",
+        header: "Other Names",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "phone",
+        header: "Phone",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "gender",
+        header: "Gender",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "date_of_birth",
+        header: "Date of Birth",
+        cell: (info) => info.getValue(),
+      },
+    ],
+    []
+  );
+
+  const { table } = useCustomTable(patients, columns);
+
+  if (loading) {
     return (
       <section>
         <Breadcrumbs>Patient Registry</Breadcrumbs>
@@ -41,14 +93,17 @@ const PatientsPage = () => {
         <input
           type="text"
           placeholder="Search patients..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => {
+            table.setGlobalFilter(e.target.value);
+          }}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
         />
       </div>
 
       {/* Patients Count */}
       <div className="mb-4">
         <p className="text-sm text-gray-600">
-          Total Patients: {patients.length}
+          Total Patients: {pagination.total}
         </p>
       </div>
 
@@ -57,64 +112,19 @@ const PatientsPage = () => {
         <div className="text-center text-gray-500 py-8">No patients found</div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Surname
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Other Names
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Phone
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Gender
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date of Birth
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {patients.map((patient) => (
-                <tr key={patient.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {patient.surname}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {patient.other_names}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {patient.phone || "N/A"}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-500 capitalize">
-                    {patient.gender}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {new Date(patient.date_of_birth).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <MainTable table={table} />
         </div>
       )}
 
       {/* Pagination */}
-      <div className="mt-4 flex justify-between items-center">
-        <button
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
-          disabled
-        >
-          Previous
-        </button>
-        <span className="text-sm text-gray-600">Page 1</span>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          Next
-        </button>
-      </div>
+      <Pagination
+        pagination={pagination}
+        onNextPage={nextPage}
+        onPrevPage={prevPage}
+        onGoToPage={goToPage}
+        onFirstPage={firstPage}
+        onLastPage={lastPage}
+      />
     </section>
   );
 };

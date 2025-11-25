@@ -73,6 +73,11 @@
     }
   }
 }
+
+:root {
+  scrollbar-color: #1e3a8a #dbeafe;
+}
+
 body {
   font-family: Outfit, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -82,6 +87,19 @@ button {
   cursor: pointer;
 }
 
+/* SCROLLBAR */
+.hide_scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide_scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.layout_main_content {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white;
+  scrollbar-gutter: stable both-edges;
+}
 /* MODAL */
 .modal_inset {
   @apply fixed inset-0 bg-black opacity-70  z-40;
@@ -93,9 +111,14 @@ button {
   @apply bg-white rounded-md shadow-xl max-w-md w-full p-6 animate-slide-in;
 }
 
+/* HEADER */
+.header {
+  @apply bg-white shadow-lg sticky top-0 w-full z-30;
+}
+
 /* SIDEBAR */
 .sidebar {
-  @apply text-dark-bg bg-white min-w-52 w-64 rounded-r-lg sticky min-h-screen top-0 left-0 flex flex-col shadow-2xl;
+  @apply text-dark-bg bg-white min-w-52 w-64 rounded-r-lg sticky h-screen top-0 left-0 flex flex-col shadow-2xl z-40;
 }
 .sidebar_links {
   @apply flex items-center gap-3 m-3 p-2 rounded-md hover:bg-primary-800 hover:text-white transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-primary-900 outline-none;
@@ -103,4 +126,13 @@ button {
 
 .logout {
   @apply flex items-center gap-3 p-2 rounded-md w-full bg-red-200 hover:bg-red-800 hover:text-white transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-red-900 outline-none;
+}
+
+/* PAGINATION */
+.pagination_btn {
+  @apply px-3 py-1 border border-gray-400 rounded text-sm text-gray-700 hover:border-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-colors text-nowrap;
+}
+
+.page_number {
+  @apply px-3 py-1 border border-gray-400 rounded text-sm text-gray-700 hover:border-blue-700 cursor-pointer transition-colors;
 }

@@ -1,3 +1,4 @@
-import Table from "./Table";
+import MainTable from "./MainTable";
+import Pagination from "./Pagination";
 
-export { Table };
+export { MainTable, Pagination };

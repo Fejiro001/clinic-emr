@@ -1,5 +1,7 @@
 import { patientQueries } from "./queries";
 import { usePatientStore } from "../store/patientStore";
+import { showToast } from "../utils/toast";
+import type { InsertPatient } from "../types/supabase";
 
 export class PatientsService {
   async fetchAllPatients(limit = 50, offset = 0) {
@@ -7,11 +9,10 @@ export class PatientsService {
       usePatientStore.getState().setLoading(true);
       usePatientStore.getState().setError("");
 
-      const patients = await patientQueries.getAllPatients(limit, offset);
+      const patients = await patientQueries.getAll(limit, offset);
       usePatientStore.getState().setPatients(patients);
       return patients;
     } catch (error) {
-      console.error("Error fetching patients:", error);
       usePatientStore
         .getState()
         .setError(
@@ -20,6 +21,17 @@ export class PatientsService {
       throw error;
     } finally {
       usePatientStore.getState().setLoading(false);
+    }
+  }
+
+  async insertNewPatient(data: InsertPatient) {
+    try {
+      await patientQueries.insert(data);
+      showToast.success("Successfully added patient!");
+    } catch (error) {
+      showToast.error(
+        error instanceof Error ? error.message : "Failed to add patient."
+      );
     }
   }
 }
