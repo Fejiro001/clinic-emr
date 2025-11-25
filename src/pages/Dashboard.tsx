@@ -1,32 +1,24 @@
 import { useSyncStore } from "../store/syncStore";
-import { batchOperationsService } from "../services/batchOperations";
 import { useState } from "react";
 import { syncQueueService } from "../services/syncQueue";
 import { Breadcrumbs } from "../components/Common";
+import { patientsService } from "../services/patients";
 
 const Dashboard = () => {
   const [testResult, setTestResult] = useState<string>("");
 
-  async function testSync() {
+  const createNewPatient = () => {
     try {
       const patientId = crypto.randomUUID();
       const randomPhone = `080${String(Math.floor(Math.random() * 100000000))}`;
 
-      await batchOperationsService.executeWrite({
-        table: "patients",
-        operation: "insert",
-        recordId: patientId,
-        data: {
-          id: patientId,
-          surname: "slmls",
-          other_names: "djkd",
-          date_of_birth: "1999-10-10",
-          gender: "female",
-          phone: randomPhone,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          version: 1,
-        },
+      void patientsService.insertNewPatient({
+        id: patientId,
+        surname: "Jesse",
+        other_names: "Abere",
+        date_of_birth: "2007-09-01",
+        gender: "male",
+        phone: randomPhone,
       });
 
       setTestResult(`✅ Patient created: ${patientId} (${randomPhone})`);
@@ -35,7 +27,7 @@ const Dashboard = () => {
         `❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     }
-  }
+  };
 
   async function clearFailedItems() {
     try {
@@ -62,7 +54,7 @@ const Dashboard = () => {
       <div className="bg-white p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-2">Sync Queue Test</h2>
         <button
-          onClick={() => void testSync()}
+          onClick={() => {createNewPatient()}}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Create Test Patient (Queue)

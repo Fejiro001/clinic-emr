@@ -1,28 +1,7 @@
 import { batchOperationsService } from "./batchOperations";
-import type { Patient } from "../types/supabase";
+import type { InsertPatient, UpdatePatient, Patient } from "../types/supabase";
+import { useAuthStore } from "../store/authStore";
 
-type InsertPatient = Omit<
-  Patient,
-  "version" | "created_at" | "updated_at" | "deleted_at" | "synced_at"
->;
-type UpdatePatient = Partial<{
-  surname: string;
-  other_names: string;
-  date_of_birth: string;
-  gender: "male" | "female";
-  address: string;
-  civil_state: string;
-  phone: string;
-  email: string;
-  occupation: string;
-  place_of_work: string;
-  tribe_nationality: string;
-  next_of_kin: string;
-  relationship_to_patient: string;
-  address_next_of_kin: string;
-  updated_by: string;
-  version: number;
-}>;
 // =======================
 // PATIENT QUERIES
 // =======================
@@ -30,7 +9,7 @@ export const patientQueries = {
   /**
    * Insert a new patient
    */
-  insertPatient: async (data: InsertPatient): Promise<boolean> => {
+  insert: async (data: InsertPatient): Promise<boolean> => {
     return await batchOperationsService.executeWrite({
       table: "patients",
       recordId: data.id,
@@ -38,6 +17,8 @@ export const patientQueries = {
       data: {
         ...data,
         version: 1,
+        updated_by: useAuthStore.getState().user?.id ?? null,
+        created_by: useAuthStore.getState().user?.id ?? null,
       },
     });
   },
@@ -45,7 +26,7 @@ export const patientQueries = {
   /**
    * Find patient by ID
    */
-  findPatientById: async (id: string): Promise<Patient | undefined> => {
+  findById: async (id: string): Promise<Patient | undefined> => {
     return await window.db.queryOne<Patient>(
       `
         SELECT * FROM patients
@@ -58,7 +39,7 @@ export const patientQueries = {
   /**
    * Find patient by phone (for duplicate detection)
    */
-  findPatientByPhone: async (phone: string): Promise<Patient | undefined> => {
+  findByPhone: async (phone: string): Promise<Patient | undefined> => {
     return window.db.queryOne<Patient>(
       `
         SELECT * FROM patients
@@ -71,7 +52,7 @@ export const patientQueries = {
   /**
    * Find patient by name and DOB (for duplicate detection)
    */
-  findPatientByNameAndDOB: async (
+  findByNameAndDOB: async (
     surname: string,
     other_names: string,
     date_of_birth: string
@@ -88,7 +69,7 @@ export const patientQueries = {
   /**
    * Search patients by name or phone
    */
-  searchPatients: async (
+  search: async (
     searchTerm: string,
     limit = 50,
     offset = 0
@@ -112,7 +93,7 @@ export const patientQueries = {
   /**
    * Get all patients with pagination
    */
-  getAllPatients: async (limit = 50, offset = 0): Promise<Patient[]> => {
+  getAll: async (limit = 50, offset = 0): Promise<Patient[]> => {
     return await window.db.query<Patient>(
       `
         SELECT * FROM patients
@@ -127,7 +108,7 @@ export const patientQueries = {
   /**
    * Get total patients count
    */
-  getPatientsCount: async (): Promise<number> => {
+  getCount: async (): Promise<number> => {
     const result = await window.db.queryOne<{ count: number }>(`
         SELECT COUNT(*) AS count FROM patients
         WHERE deleted_at IS NULL
@@ -138,10 +119,7 @@ export const patientQueries = {
   /**
    * Update patient record
    */
-  updatePatientRecord: async (
-    id: string,
-    data: UpdatePatient
-  ): Promise<boolean> => {
+  updateRecord: async (id: string, data: UpdatePatient): Promise<boolean> => {
     return await batchOperationsService.executeWrite({
       table: "patients",
       operation: "update",
@@ -153,7 +131,7 @@ export const patientQueries = {
   /**
    * Soft delete patient
    */
-  softDeletePatient: async (id: string): Promise<boolean> => {
+  softDelete: async (id: string): Promise<boolean> => {
     return await batchOperationsService.executeWrite({
       table: "patients",
       operation: "delete",

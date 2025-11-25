@@ -288,7 +288,9 @@ export class PushSyncService {
         ? (JSON.parse(item.data) as Record<string, unknown>)
         : item.data;
 
-    const { error } = await supabase.from(tableName).insert([data]);
+    const { error } = await supabase
+      .from(tableName)
+      .insert([{ ...data, synced_at: new Date().toISOString() }]);
 
     if (error) throw error;
   }
@@ -331,7 +333,7 @@ export class PushSyncService {
         // Auto-resolved, update with merged data
         const { error } = await supabase
           .from(tableName)
-          .update(resolved)
+          .update({ ...resolved, synced_at: new Date().toISOString() })
           .eq("id", item.record_id);
 
         if (error) throw error;
@@ -357,7 +359,7 @@ export class PushSyncService {
     // No conflict, sync normally
     const { error } = await supabase
       .from(tableName)
-      .update(localData)
+      .update({ ...localData, synced_at: new Date().toISOString() })
       .eq("id", item.record_id);
 
     if (error) throw error;
@@ -372,7 +374,10 @@ export class PushSyncService {
   ): Promise<void> {
     const { error } = await supabase
       .from(tableName)
-      .update({ deleted_at: new Date().toISOString() })
+      .update({
+        deleted_at: new Date().toISOString(),
+        synced_at: new Date().toISOString(),
+      })
       .eq("id", item.record_id);
 
     if (error) throw error;

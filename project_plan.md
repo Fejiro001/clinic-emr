@@ -87,6 +87,11 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Test queue persistence on app close/restart
 - [x] Test batching performance
 
+- [ ] Sync from Supabase to local on startup (new/updated records)
+- [ ] Implement periodic sync (every 30 minutes)
+- [ ] Coordinate sync direction (local → remote, remote → local)
+- [ ] Handle conflicts when pulling from remote
+
 ### 1.7 Conflict Detection & Resolution (Week 4)
 
 - [x] Define CONFLICT_RULES for each table (as above)
@@ -107,7 +112,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 ### 1.9 Patient Registry (Week 5)
 
 - [x] Create patient registry list page (view/search only)
-- [ ] Implement pagination (infinite scroll, 50 items/page)
+- [x] Implement pagination (infinite scroll, 50 items/page)
 - [ ] Build search by name/phone/DOB
 - [ ] Create patient detail view with medical history
 - [ ] Implement soft deletes (exclude deleted_at IS NOT NULL)
@@ -1489,7 +1494,7 @@ if (!session) {
 // Save token securely:
 import { safeStorage } from "electron";
 
-ipcMain.handle("save-token", (event, token) => {
+ipcMain.handle("save-token", (event, access_token, refresh_token) => {
   const encrypted = safeStorage.encryptString(token);
   store.set("auth-token", encrypted); // Using electron-store
 });

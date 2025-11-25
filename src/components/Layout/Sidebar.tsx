@@ -71,50 +71,52 @@ const Sidebar = () => {
       )}
 
       <aside className="sidebar">
-        <div className="border-b border-b-gray-400 flex items-center gap-2 px-4 py-6">
-          <h1 className="text-xl font-bold">Celian Clinic EMR</h1>
-        </div>
+        <div className="hide_scrollbar h-full min-h-screen overflow-y-auto flex flex-col">
+          <div className="border-b border-b-gray-400 flex items-center gap-2 px-4 py-6">
+            <h1 className="text-xl font-bold">Celian Clinic EMR</h1>
+          </div>
 
-        <nav className="overflow-y-auto">
-          <ul>
-            {navItems.map((item) => {
-              const Icon = item.icon;
+          <nav className="overflow-y-auto">
+            <ul>
+              {navItems.map((item) => {
+                const Icon = item.icon;
 
-              return (
-                // <RoleGuard
-                //   allowedRoles={item.roles as UserRole[]}
-                //   key={item.path}
-                // >
-                  <li>
-                    <Link
-                      to={item.path}
-                      title={item.label}
-                      className={`sidebar_links ${location.pathname === item.path ? "bg-primary-800 text-white" : ""}`}
-                    >
-                      <Icon size={20} />
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                // </RoleGuard>
-              );
-            })}
-          </ul>
-        </nav>
+                return (
+                  <RoleGuard
+                    allowedRoles={item.roles as UserRole[]}
+                    key={item.path}
+                  >
+                    <li>
+                      <Link
+                        to={item.path}
+                        title={item.label}
+                        className={`sidebar_links ${location.pathname === item.path ? "bg-primary-800 text-white" : ""}`}
+                      >
+                        <Icon size={20} />
+                        <span>{item.label}</span>
+                      </Link>
+                    </li>
+                  </RoleGuard>
+                );
+              })}
+            </ul>
+          </nav>
 
-        <div className="mt-auto  inset-x-0 bottom-0 w-full border-t border-slate-400 pt-4 space-y-2">
-          {/* Online status indicator */}
-          <SyncStatusIndicator />
+          <div className="mt-auto inset-x-0 bottom-0 w-full border-t border-slate-400 pt-4 space-y-2">
+            {/* Online status indicator */}
+            <SyncStatusIndicator />
 
-          <div className="p-3">
-            <button
-              onClick={() => {
-                setShowLogoutModal(true);
-              }}
-              className="logout"
-            >
-              <LogOut size={20} />
-              <span>Logout</span>
-            </button>
+            <div className="p-3">
+              <button
+                onClick={() => {
+                  setShowLogoutModal(true);
+                }}
+                className="logout"
+              >
+                <LogOut size={20} />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </aside>

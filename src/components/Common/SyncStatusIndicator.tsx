@@ -29,7 +29,7 @@ const SyncStatusIndicator = () => {
       const failed = items
         .filter((item) => item.status === "failed")
         .map((item) => ({
-          id: item.id,
+          id: item.id ?? crypto.getRandomValues(new Uint32Array(1))[0],
           table_name: item.table_name,
           retry_count: item.retry_count ?? 0,
           error_message: item.error_message,
@@ -53,6 +53,7 @@ const SyncStatusIndicator = () => {
     }
   }, [showDetails, syncStatus]);
 
+  // Check for items that need to be retried every second
   useEffect(() => {
     if (retryTimes.size === 0) return;
 
@@ -163,7 +164,7 @@ const SyncStatusIndicator = () => {
             const failed = items
               .filter((item) => item.status === "failed")
               .map((item) => ({
-                id: item.id,
+                id: item.id ?? crypto.getRandomValues(new Uint32Array(1))[0],
                 table_name: item.table_name,
                 retry_count: item.retry_count ?? 0,
                 error_message: item.error_message,
@@ -255,8 +256,12 @@ const SyncStatusIndicator = () => {
           failedItems={failedItems}
           retryTimes={retryTimes}
           formatLastSync={formatLastSync}
-          handleRetryFailed={handleRetryFailed}
-          handleSyncNow={handleSyncNow}
+          handleRetryFailed={(e) => {
+            void handleRetryFailed(e);
+          }}
+          handleSyncNow={(e) => {
+            void handleSyncNow(e);
+          }}
         />
       )}
     </>
