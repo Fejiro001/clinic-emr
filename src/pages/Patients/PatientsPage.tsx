@@ -6,6 +6,7 @@ import { patientsService } from "../../services/patients";
 import { Breadcrumbs } from "../../components/Common";
 import { MainTable, Pagination } from "../../components/TableComponents";
 import { patientQueries } from "../../services/queries";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 const PatientsPage = () => {
   const {
@@ -43,7 +44,7 @@ const PatientsPage = () => {
       },
       {
         accessorKey: "phone",
-        header: "Phone",
+        header: "Phone Number",
         cell: (info) => info.getValue(),
       },
       {
@@ -53,14 +54,38 @@ const PatientsPage = () => {
       },
       {
         accessorKey: "date_of_birth",
-        header: "Date of Birth",
-        cell: (info) => info.getValue(),
+        header: "Age",
+        cell: (info) => {
+          const dob = new Date(info.getValue() as string);
+          const ageDifMs = Date.now() - dob.getTime();
+          const ageDate = new Date(ageDifMs);
+          return <span>{Math.abs(ageDate.getUTCFullYear() - 1970)}</span>;
+        },
+      },
+      {
+        header: "Actions",
+        cell: (info) => {
+          const patient = info.row.original;
+          return (
+            <div className="flex gap-2">
+              <button title="View" className="text-primary-600">
+                <Eye size={16} />
+              </button>
+              <button title="Edit" className="text-gray-600">
+                <Pencil size={16} />
+              </button>
+              <button title="Delete" className="text-red-600">
+                <Trash2 size={16} />
+              </button>
+            </div>
+          );
+        },
       },
     ],
     []
   );
 
-  const { table } = useCustomTable(patients, columns);
+  const { table, globalFilter } = useCustomTable(patients, columns);
 
   if (loading) {
     return (
@@ -124,6 +149,7 @@ const PatientsPage = () => {
         onGoToPage={goToPage}
         onFirstPage={firstPage}
         onLastPage={lastPage}
+        entriesName="patients"
       />
     </section>
   );

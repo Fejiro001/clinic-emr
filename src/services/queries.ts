@@ -140,3 +140,13 @@ export const patientQueries = {
     });
   },
 };
+
+// =======================
+// INPATIENT QUERIES
+// =======================
+export const inpatientQueries = {};
+// =======================
+
+// OUTINPATIENT QUERIES
+// =======================
+export const outpatientQueries = {};

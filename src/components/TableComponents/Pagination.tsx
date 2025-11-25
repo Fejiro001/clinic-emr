@@ -7,6 +7,7 @@ interface PaginationProps {
   onGoToPage: (page: number) => void;
   onFirstPage: () => void;
   onLastPage: () => void;
+  entriesName?: string;
   maxPageButtons?: number;
 }
 
@@ -17,6 +18,7 @@ const Pagination = ({
   onGoToPage,
   onFirstPage,
   onLastPage,
+  entriesName,
   maxPageButtons = 3,
 }: PaginationProps) => {
   const generatePageNumbers = (): number[] => {
@@ -46,10 +48,9 @@ const Pagination = ({
   const pageNumbers = generatePageNumbers();
 
   return (
-    <div className="flex flex-col gap-3 mt-4 items-center">
+    <div className="flex justify-between gap-3 mt-4 items-center">
       <span className="text-sm text-gray-700">
-        Showing {pagination.from} to {pagination.to} of {pagination.total}{" "}
-        results
+        Showing {pagination.from} to {pagination.to} {entriesName}
       </span>
 
       <nav
@@ -155,9 +156,9 @@ const Pagination = ({
         </div>
       </nav>
 
-      <span className="text-center text-sm text-gray-600">
+      {/* <span className="text-center text-sm text-gray-600">
         Page {pagination.currentPage} of {pagination.totalPages}
-      </span>
+      </span> */}
     </div>
   );
 };
