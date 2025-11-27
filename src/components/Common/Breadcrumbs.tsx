@@ -21,9 +21,10 @@ const Breadcrumbs = ({ children }: { children: string }) => {
 
           {pathnames.map((path, index) => {
             const activePath = index === pathnames.length - 1;
+            const to = `/${pathnames.slice(0, index + 1).join("/")}`;
 
             return (
-              <div className="flex gap-1 items-center " key={index}>
+              <div className="flex gap-1 items-center" key={index}>
                 <span>/</span>
                 <li>
                   {activePath ? (
@@ -31,7 +32,7 @@ const Breadcrumbs = ({ children }: { children: string }) => {
                   ) : (
                     <Link
                       className="text-primary-600 hover:underline"
-                      to={path}
+                      to={to}
                       title={path}
                     >
                       {path}

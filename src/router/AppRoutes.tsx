@@ -4,8 +4,8 @@ import { ProtectedRoute } from "../components/Auth";
 import Layout from "../layout/Layout";
 import Dashboard from "../pages/Dashboard";
 import Patients from "../pages/Patients/Patients";
-import Outpatients from "../pages/Patients/Outpatients";
-import Inpatients from "../pages/Patients/Inpatients";
+import Outpatients from "../pages/Outpatients/Outpatients";
+import Inpatients from "../pages/Inpatients/Inpatients";
 
 const AppRoutes = () => {
   return (
