@@ -8,7 +8,7 @@ import { MainTable, Pagination } from "../../components/TableComponents";
 import { patientQueries } from "../../services/queries";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-const PatientsPage = () => {
+const Patients = () => {
   const {
     data: patients,
     loading,
@@ -155,4 +155,4 @@ const PatientsPage = () => {
   );
 };
 
-export default PatientsPage;
+export default Patients;

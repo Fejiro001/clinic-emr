@@ -3,9 +3,9 @@ import LoginPage from "../pages/LoginPage";
 import { ProtectedRoute } from "../components/Auth";
 import Layout from "../layout/Layout";
 import Dashboard from "../pages/Dashboard";
-import PatientsPage from "../pages/Patients/PatientsPage";
-import OutpatientPage from "../pages/Patients/OutpatientPage";
-import InpatientPage from "../pages/Patients/InpatientPage";
+import Patients from "../pages/Patients/Patients";
+import Outpatients from "../pages/Patients/Outpatients";
+import Inpatients from "../pages/Patients/Inpatients";
 
 const AppRoutes = () => {
   return (
@@ -20,9 +20,9 @@ const AppRoutes = () => {
           }
         >
           <Route index path="/" element={<Dashboard />} />
-          <Route path="patients" element={<PatientsPage />}>
-            <Route path="inpatient" element={<InpatientPage />} />
-            <Route path="outpatient" element={<OutpatientPage />} />
+          <Route path="patients" element={<Patients />}>
+            <Route path="inpatient" element={<Inpatients />} />
+            <Route path="outpatient" element={<Outpatients />} />
           </Route>
           <Route path="audit-logs" element={<div>Audit Logs Page</div>} />
           <Route path="users" element={<div>Users Page</div>} />

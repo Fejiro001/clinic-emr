@@ -249,9 +249,9 @@ clinic-emr/
 │   │       └── AuditLogViewer.tsx
 │   ├── pages/
 │   │   ├── Dashboard.tsx
-│   │   ├── PatientsPage.tsx
-│   │   ├── InpatientPage.tsx
-│   │   ├── OutpatientPage.tsx
+│   │   ├── Patients.tsx
+│   │   ├── Inpatients.tsx
+│   │   ├── Outpatients.tsx
 │   │   ├── LoginPage.tsx
 │   │   └── AuditLogsPage.tsx
 │   ├── services/

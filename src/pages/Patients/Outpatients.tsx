@@ -1,6 +1,6 @@
 import { Breadcrumbs } from "../../components/Common";
 
-const OutpatientPage = () => {
+const Outpatients = () => {
   return (
     <section>
       <Breadcrumbs>OutPatients</Breadcrumbs>
@@ -8,4 +8,4 @@ const OutpatientPage = () => {
   );
 };
 
-export default OutpatientPage;
+export default Outpatients;

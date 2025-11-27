@@ -6,9 +6,6 @@ import type { InsertPatient } from "../types/supabase";
 export class PatientsService {
   async fetchAllPatients(limit = 50, offset = 0) {
     try {
-      usePatientStore.getState().setLoading(true);
-      usePatientStore.getState().setError("");
-
       const patients = await patientQueries.getAll(limit, offset);
       usePatientStore.getState().setPatients(patients);
       return patients;
@@ -19,8 +16,6 @@ export class PatientsService {
           error instanceof Error ? error.message : "Failed to fetch patients"
         );
       throw error;
-    } finally {
-      usePatientStore.getState().setLoading(false);
     }
   }
 
