@@ -136,9 +136,7 @@ const Patients = () => {
       {patients.length === 0 ? (
         <div className="text-center text-gray-500 py-8">No patients found</div>
       ) : (
-        <div className="overflow-x-auto">
-          <MainTable table={table} />
-        </div>
+        <MainTable table={table} />
       )}
 
       {/* Pagination */}

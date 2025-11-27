@@ -9,6 +9,13 @@ import type {
 } from "../types/supabase";
 import { useAuthStore } from "../store/authStore";
 
+export interface DashboardStats {
+  totalPatients: number;
+  currentlyAdmitted: number;
+  todayOutpatientVisits: number;
+  dischargesToday: number;
+}
+
 // =======================
 // PATIENT QUERIES
 // =======================
@@ -498,7 +505,7 @@ export const timelineQueries = {
 // DASHBOARD QUERIES
 // ===========================
 export const dashboardQueries = {
-  getStats: async () => {
+  getStats: async (): Promise<DashboardStats> => {
     const totalPatients = await patientQueries.getCount();
     const currentlyAdmitted = await inpatientQueries.countAdmitted();
     const todayOutpatientVisits = await outpatientQueries.countTodayVisits();

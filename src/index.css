@@ -35,9 +35,10 @@
   --color-secondary-900: #14532d;
 
   /* Accent Colors */
+  --color-accent-blue: #3275f1;
+  --color-accent-green: #1ab051;
   --color-accent-purple: #9b40ef;
   --color-accent-orange: #f06310;
-  --color-accent-green: #1ab051;
 
   /* Status Colors */
   --color-success: #22c55e;
@@ -97,7 +98,7 @@ button {
 }
 
 .layout_main_content {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white;
+  @apply max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white;
   scrollbar-gutter: stable both-edges;
 }
 /* MODAL */
