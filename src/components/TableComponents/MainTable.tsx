@@ -30,7 +30,7 @@ const MainTable = ({ table }: { table: Table<unknown> }) => {
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="px-4 py-3 text-sm text-gray-900 border border-gray-300"
+                  className="px-3 py-2 text-sm text-gray-900 border border-gray-300"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>

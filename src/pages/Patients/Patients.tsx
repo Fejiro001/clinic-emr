@@ -4,14 +4,21 @@ import type { Patient } from "../../types/supabase";
 import { useCustomTable, useDebounce, usePagination } from "../../hooks";
 import { patientsService } from "../../services/patients";
 import { Breadcrumbs, Button } from "../../components/Common";
-import { MainTable, Pagination } from "../../components/TableComponents";
+import {
+  MainTable,
+  Pagination,
+  SkeletonTable,
+} from "../../components/TableComponents";
 import { patientQueries } from "../../services/queries";
 import { useNavigate } from "react-router";
 
 const Patients = () => {
   const [searchInput, setSearchInput] = useState("");
   const { debouncedValue: search } = useDebounce(searchInput);
+  const [genderFilter, setGenderFilter] = useState<string>();
+
   const navigate = useNavigate();
+  const isSearching = searchInput !== search && searchInput !== "";
 
   const {
     data: patients,
@@ -27,6 +34,7 @@ const Patients = () => {
     queryFn: patientQueries.query,
     countFn: patientQueries.count,
     search,
+    gender: genderFilter,
     initialLimit: 20,
     initialPage: 1,
   });
@@ -92,16 +100,9 @@ const Patients = () => {
 
   const { table } = useCustomTable(patients, columns);
 
-  if (loading) {
-    return (
-      <section>
-        <Breadcrumbs>Patient Registry</Breadcrumbs>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Loading patients...</div>
-        </div>
-      </section>
-    );
-  }
+  useEffect(() => {
+    if (search) goToPage(1);
+  }, [goToPage, search]);
 
   if (error) {
     return (
@@ -115,34 +116,72 @@ const Patients = () => {
   }
 
   return (
-    <section>
+    <section className="space-y-4">
       <Breadcrumbs>Patient Registry</Breadcrumbs>
 
-      {/* SearchBar */}
-      <div className="my-4">
-        <input
-          type="text"
-          placeholder="Search patients..."
-          onChange={(event) => {
-            setSearchInput(event.target.value);
+      <div className="flex gap-4">
+        {/* SearchBar */}
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Search patients..."
+            onChange={(event) => {
+              setSearchInput(event.target.value);
+            }}
+            value={searchInput}
+            className="w-full input_style"
+          />
+          {isSearching ? (
+            <div className="absolute right-3 top-3">
+              <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
+            </div>
+          ) : (
+            searchInput && (
+              <button
+                onClick={() => {
+                  setSearchInput("");
+                }}
+                title="Clear search"
+                className="absolute right-3 top-2 bg-gray-500 hover:bg-gray-700 text-white px-2 py-1 rounded-full text-sm font-bold cursor-pointer "
+              >
+                ✕
+              </button>
+            )
+          )}
+        </div>
+
+        {/* Gender Filter */}
+        <select
+          className="input_style"
+          value={genderFilter}
+          onChange={(e) => {
+            setGenderFilter(e.target.value || undefined);
           }}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
-        />
+        >
+          <option value="">All Genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
       </div>
 
       {/* Patients Count */}
-      <div className="mb-4">
+      <div>
         <p className="text-sm text-gray-600">
           Total Patients: {pagination.total}
         </p>
       </div>
 
       {/* Table */}
-      {patients.length === 0 ? (
+      {patients.length === 0 && (
         <div className="text-center text-gray-500 py-8">No patients found</div>
-      ) : (
-        <MainTable table={table} />
       )}
+
+      {patients.length !== 0 &&
+        (loading ? (
+          <SkeletonTable table={table} message="Loading patients..." />
+        ) : (
+          <MainTable table={table} />
+        ))}
 
       {/* Pagination */}
       <Pagination
