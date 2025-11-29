@@ -28,13 +28,13 @@ const navItems = [
     roles: ["doctor", "secretary", "nurse", "admin"],
   },
   {
-    path: "/patients/inpatient",
+    path: "/patients/inpatients",
     label: "Inpatient",
     icon: Hospital,
     roles: ["doctor", "nurse", "admin"],
   },
   {
-    path: "/patients/outpatient",
+    path: "/patients/outpatients",
     label: "Outpatient",
     icon: Stethoscope,
     roles: ["doctor", "secretary", "admin"],

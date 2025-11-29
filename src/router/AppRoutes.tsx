@@ -6,6 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import Patients from "../pages/Patients/Patients";
 import Outpatients from "../pages/Outpatients/Outpatients";
 import Inpatients from "../pages/Inpatients/Inpatients";
+import PatientDetails from "../pages/Patients/PatientDetails";
 
 const AppRoutes = () => {
   return (
@@ -21,8 +22,9 @@ const AppRoutes = () => {
         >
           <Route index path="/" element={<Dashboard />} />
           <Route path="patients" element={<Patients />}>
-            <Route path="inpatient" element={<Inpatients />} />
-            <Route path="outpatient" element={<Outpatients />} />
+            <Route path="details" element={<PatientDetails />} />
+            <Route path="inpatients" element={<Inpatients />} />
+            <Route path="outpatients" element={<Outpatients />} />
           </Route>
           <Route path="audit-logs" element={<div>Audit Logs Page</div>} />
           <Route path="users" element={<div>Users Page</div>} />
