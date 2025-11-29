@@ -1,14 +1,18 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
 import type { Patient } from "../../types/supabase";
-import { useCustomTable, usePagination } from "../../hooks";
+import { useCustomTable, useDebounce, usePagination } from "../../hooks";
 import { patientsService } from "../../services/patients";
-import { Breadcrumbs } from "../../components/Common";
+import { Breadcrumbs, Button } from "../../components/Common";
 import { MainTable, Pagination } from "../../components/TableComponents";
 import { patientQueries } from "../../services/queries";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router";
 
 const Patients = () => {
+  const [searchInput, setSearchInput] = useState("");
+  const { debouncedValue: search } = useDebounce(searchInput);
+  const navigate = useNavigate();
+
   const {
     data: patients,
     loading,
@@ -20,8 +24,9 @@ const Patients = () => {
     firstPage,
     lastPage,
   } = usePagination({
-    fetchFn: patientQueries.getAll,
-    countFn: patientQueries.getCount,
+    queryFn: patientQueries.query,
+    countFn: patientQueries.count,
+    search,
     initialLimit: 20,
     initialPage: 1,
   });
@@ -67,25 +72,25 @@ const Patients = () => {
         cell: (info) => {
           const patient = info.row.original;
           return (
-            <div className="flex gap-2">
-              <button title="View" className="text-primary-600">
-                <Eye size={16} />
-              </button>
-              <button title="Edit" className="text-gray-600">
-                <Pencil size={16} />
-              </button>
-              <button title="Delete" className="text-red-600">
-                <Trash2 size={16} />
-              </button>
-            </div>
+            <Button
+              onClick={() => {
+                console.log("Navigating to details of patient ID:", patient.id);
+                void navigate("/patients/details", {
+                  state: { patientId: patient.id },
+                });
+              }}
+              size="sm"
+            >
+              Details
+            </Button>
           );
         },
       },
     ],
-    []
+    [navigate]
   );
 
-  const { table, globalFilter } = useCustomTable(patients, columns);
+  const { table } = useCustomTable(patients, columns);
 
   if (loading) {
     return (
@@ -118,8 +123,8 @@ const Patients = () => {
         <input
           type="text"
           placeholder="Search patients..."
-          onChange={(e) => {
-            table.setGlobalFilter(e.target.value);
+          onChange={(event) => {
+            setSearchInput(event.target.value);
           }}
           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
         />

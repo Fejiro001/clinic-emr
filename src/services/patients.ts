@@ -19,6 +19,22 @@ export class PatientsService {
     }
   }
 
+  async fetchPatientById(id: string) {
+    try {
+      const patient = await patientQueries.findById(id);
+      usePatientStore.getState().setSelectedPatient(patient ?? null);
+      console.log("Fetched patient:", patient);
+      return patient;
+    } catch (error) {
+      usePatientStore
+        .getState()
+        .setError(
+          error instanceof Error ? error.message : "Failed to fetch patient"
+        );
+      throw error;
+    }
+  }
+
   async insertNewPatient(data: InsertPatient) {
     try {
       await patientQueries.insert(data);
@@ -27,6 +43,21 @@ export class PatientsService {
       showToast.error(
         error instanceof Error ? error.message : "Failed to add patient."
       );
+    }
+  }
+
+  async searchPatients(query: string) {
+    try {
+      const results = await patientQueries.search(query);
+      usePatientStore.getState().setPatients(results);
+      return results;
+    } catch (error) {
+      usePatientStore
+        .getState()
+        .setError(
+          error instanceof Error ? error.message : "Failed to search patients"
+        );
+      throw error;
     }
   }
 }

@@ -83,24 +83,48 @@ export const patientQueries = {
   /**
    * Search patients by name or phone
    */
-  search: async (
-    searchTerm: string,
-    limit = 50,
-    offset = 0
-  ): Promise<Patient[]> => {
-    const term = `%${searchTerm}%`;
+  query: async (params: {
+    limit: number;
+    offset: number;
+    search?: string;
+    gender?: string;
+    ward?: string;
+    sortBy?: string;
+    sortOrder?: "ASC" | "DESC";
+  }): Promise<Patient[]> => {
+    const {
+      limit,
+      offset,
+      search,
+      gender,
+      sortBy = "updated_at",
+      sortOrder = "DESC",
+    } = params;
+
+    const conditions: string[] = ["deleted_at IS NULL"];
+    const values: unknown[] = [];
+
+    if (search) {
+      conditions.push("(surname LIKE ? OR other_names LIKE ? OR phone LIKE ? OR date_of_birth LIKE ?)");
+      const term = `%${search}%`;
+      values.push(term, term, term, term);
+    }
+
+    if (gender) {
+      conditions.push("gender = ?");
+      values.push(gender);
+    }
+
+    const whereClauses = conditions.join(" AND ");
+
     return await window.db.query<Patient>(
       `
         SELECT * FROM patients
-        WHERE (
-            surname LIKE ? OR
-            other_names LIKE ? OR
-            phone LIKE ?
-        ) AND deleted_at IS NULL
-         ORDER BY updated_at DESC
-         LIMIT ? OFFSET ?
+        WHERE ${whereClauses}
+        ORDER BY ${sortBy} ${sortOrder}
+        LIMIT ? OFFSET ?
     `,
-      [term, term, term, limit, offset]
+      [...values, limit, offset]
     );
   },
 
@@ -122,11 +146,30 @@ export const patientQueries = {
   /**
    * Get total patients count
    */
-  getCount: async (): Promise<number> => {
+  count: async (filters?: {
+    search?: string;
+    gender?: string;
+  }): Promise<number> => {
+    const conditions: string[] = ["deleted_at IS NULL"];
+    const values: unknown[] = [];
+
+    if (filters?.search) {
+      conditions.push("(surname LIKE ? OR other_names LIKE ? OR phone LIKE ? OR date_of_birth LIKE ?)");
+      const term = `%${filters.search}%`;
+      values.push(term, term, term, term);
+    }
+
+    if (filters?.gender) {
+      conditions.push("gender = ?");
+      values.push(filters.gender);
+    }
+
+    const whereClauses = conditions.join(" AND ");
+
     const result = await window.db.queryOne<{ count: number }>(`
         SELECT COUNT(*) AS count FROM patients
-        WHERE deleted_at IS NULL
-    `);
+        WHERE ${whereClauses}
+    `, values);
     return result?.count ?? 0;
   },
 
@@ -506,7 +549,7 @@ export const timelineQueries = {
 // ===========================
 export const dashboardQueries = {
   getStats: async (): Promise<DashboardStats> => {
-    const totalPatients = await patientQueries.getCount();
+    const totalPatients = await patientQueries.count();
     const currentlyAdmitted = await inpatientQueries.countAdmitted();
     const todayOutpatientVisits = await outpatientQueries.countTodayVisits();
     const dischargesToday = await inpatientQueries.countDischargesOnDate(

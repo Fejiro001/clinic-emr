@@ -4,9 +4,23 @@ import {
   type PaginationMeta,
 } from "../services/paginationHelper";
 
+interface QueryParams {
+  limit: number;
+  offset: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC";
+  [key: string]: unknown; // Allow any additional filters
+}
+
 export interface UsePaginationOptions<T> {
-  fetchFn: (limit: number, offset: number) => Promise<T[]>;
-  countFn: () => Promise<number>;
+  queryFn: (params: QueryParams) => Promise<T[]>;
+  countFn: (filters?: Partial<QueryParams>) => Promise<number>;
+  search?: string;
+  gender?: string;
+  ward?: string;
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC";
   initialLimit?: number;
   initialPage?: number;
 }
@@ -26,17 +40,22 @@ export interface UsePaginationReturn<T> {
 }
 
 const usePagination = <T>({
-  fetchFn,
+  queryFn,
   countFn,
+  search,
+  gender,
+  ward,
+  sortBy,
+  sortOrder,
   initialLimit = 50,
   initialPage = 1,
 }: UsePaginationOptions<T>): UsePaginationReturn<T> => {
-  const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(initialPage);
+  const [data, setData] = useState<T[]>([]);
   const [limit, setLimit] = useState(initialLimit);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Calculate pagination metadata
   const pagination = calculatePagination({ page, limit, total });
@@ -47,10 +66,11 @@ const usePagination = <T>({
       setError(null);
 
       const offset = (page - 1) * limit;
+      const filters = { search, gender, ward, sortBy, sortOrder };
 
       const [items, count] = await Promise.all([
-        fetchFn(limit, offset),
-        countFn(),
+        queryFn({ limit, offset, ...filters }),
+        countFn(filters),
       ]);
 
       setData(items);
@@ -61,11 +81,11 @@ const usePagination = <T>({
     } finally {
       setLoading(false);
     }
-  }, [page, limit]);
+  }, [countFn, gender, limit, page, queryFn, search, sortBy, sortOrder, ward]);
 
   useEffect(() => {
     void fetchData();
-  }, [page, limit, fetchFn, countFn]);
+  }, [fetchData]);
 
   const nextPage = useCallback(() => {
     if (page < pagination.totalPages) {
@@ -109,10 +129,12 @@ const usePagination = <T>({
     try {
       setLoading(true);
       setError(null);
+      
+      const filters = { search, gender, ward, sortBy, sortOrder };
 
       const [items, count] = await Promise.all([
-        fetchFn(limit, offset),
-        countFn(),
+        queryFn({ limit, offset, ...filters }),
+        countFn(filters),
       ]);
 
       setData(items);
@@ -123,7 +145,7 @@ const usePagination = <T>({
     } finally {
       setLoading(false);
     }
-  }, [fetchFn, countFn, page, limit]);
+  }, [page, limit, queryFn, search, gender, ward, sortBy, sortOrder, countFn]);
 
   return {
     data,

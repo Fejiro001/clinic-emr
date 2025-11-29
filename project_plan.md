@@ -113,7 +113,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 - [x] Create patient registry list page (view/search only)
 - [x] Implement pagination (infinite scroll, 50 items/page)
-- [ ] Build search by name/phone/DOB
+- [x] Build search by name/phone/DOB
 - [ ] Create patient detail view with medical history
 - [ ] Implement soft deletes (exclude deleted_at IS NOT NULL)
 - [ ] Add pagination to patient history timeline
