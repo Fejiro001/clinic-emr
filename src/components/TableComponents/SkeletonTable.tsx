@@ -8,7 +8,7 @@ interface SkeletonTableProps {
 
 const SkeletonTable = ({
   table,
-  rowCount = 10,
+  rowCount = 5,
   message = "Loading data...",
 }: SkeletonTableProps) => {
   const headers = table.getHeaderGroups()[0]?.headers;

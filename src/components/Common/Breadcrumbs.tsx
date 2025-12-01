@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router";
 
-const Breadcrumbs = ({ children }: { children: string }) => {
+const Breadcrumbs = ({ children }: { children: string | string[] }) => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 

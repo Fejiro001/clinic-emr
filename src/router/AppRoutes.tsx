@@ -21,11 +21,10 @@ const AppRoutes = () => {
           }
         >
           <Route index path="/" element={<Dashboard />} />
-          <Route path="patients" element={<Patients />}>
-            <Route path="details" element={<PatientDetails />} />
-            <Route path="inpatients" element={<Inpatients />} />
-            <Route path="outpatients" element={<Outpatients />} />
-          </Route>
+          <Route path="patients" element={<Patients />} />
+          <Route path="patients/details" element={<PatientDetails />} />
+          <Route path="patients/inpatients" element={<Inpatients />} />
+          <Route path="patients/outpatients" element={<Outpatients />} />
           <Route path="audit-logs" element={<div>Audit Logs Page</div>} />
           <Route path="users" element={<div>Users Page</div>} />
           <Route path="profile" element={<div>Profiles Page</div>} />

@@ -2,9 +2,9 @@ import type { Ref } from "react";
 
 interface FormInputProps {
   id: string;
-  type: string;
+  type?: string;
   placeholder?: string;
-  ref: Ref<HTMLInputElement>;
+  ref?: Ref<HTMLInputElement>;
   disabled?: boolean;
   autoComplete?: string;
 }
@@ -20,7 +20,7 @@ const FormInput = ({
 }: FormInputProps) => {
   return (
     <input
-      className="w-full border border-gray-300 p-2 rounded-sm focus:outline-none focus:ring focus:ring-blue-800 disabled:opacity-50"
+      className="w-full input_style"
       disabled={disabled}
       id={id}
       type={type}
