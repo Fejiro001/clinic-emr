@@ -30,6 +30,8 @@ const Patients = () => {
     goToPage,
     firstPage,
     lastPage,
+    page,
+    initialLimit,
   } = usePagination({
     queryFn: patientQueries.query,
     countFn: patientQueries.count,
@@ -45,6 +47,10 @@ const Patients = () => {
 
   const columns = useMemo<ColumnDef<Patient>[]>(
     () => [
+      {
+        header: "S/N",
+        cell: ({ row }) => (page - 1) * initialLimit + row.index + 1,
+      },
       {
         accessorKey: "surname",
         header: "Surname",
@@ -82,9 +88,8 @@ const Patients = () => {
           return (
             <Button
               onClick={() => {
-                console.log("Navigating to details of patient ID:", patient.id);
                 void navigate("/patients/details", {
-                  state: { patientId: patient.id },
+                  state: { id: patient.id },
                 });
               }}
               size="sm"
@@ -95,7 +100,7 @@ const Patients = () => {
         },
       },
     ],
-    [navigate]
+    [initialLimit, navigate, page]
   );
 
   const { table } = useCustomTable(patients, columns);
