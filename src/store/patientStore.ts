@@ -5,10 +5,10 @@ interface PatientState {
   isLoading: boolean;
   error: string;
   patients: Patient[] | [];
-  selectedPatient: Patient | null;
+  patient: Patient | null;
 
   setPatients: (patients: Patient[]) => void;
-  setSelectedPatient: (patient: Patient | null) => void;
+  setPatient: (patient: Patient | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string) => void;
 }
@@ -17,7 +17,7 @@ export const usePatientStore = create<PatientState>((set) => ({
   isLoading: false,
   error: "",
   patients: [],
-  selectedPatient: null,
+  patient: null,
 
   setPatients: (patients) => {
     set({
@@ -25,8 +25,8 @@ export const usePatientStore = create<PatientState>((set) => ({
     });
   },
 
-  setSelectedPatient: (patient) => {
-    set({ selectedPatient: patient });
+  setPatient: (patient) => {
+    set({ patient });
   },
 
   setLoading: (loading) => {

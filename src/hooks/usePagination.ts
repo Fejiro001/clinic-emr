@@ -37,6 +37,8 @@ export interface UsePaginationReturn<T> {
   lastPage: () => void;
   setPageSize: (size: number) => void;
   refresh: () => Promise<void>;
+  page: number;
+  initialLimit: number;
 }
 
 const usePagination = <T>({
@@ -159,6 +161,8 @@ const usePagination = <T>({
     lastPage,
     setPageSize,
     refresh,
+    page,
+    initialLimit
   };
 };
 
