@@ -6,13 +6,14 @@ import { FormError, FormInput, FormLabel } from "../components/Form/index.js";
 import { authService } from "../services/auth.js";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { CircleX } from "lucide-react";
+import { CircleX, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/Common/index.js";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -40,7 +41,9 @@ const LoginPage = () => {
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         {/* Logo/Title */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Celian Clinic EMR</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Celian Clinic EMR
+          </h1>
           <p className="text-gray-600 mt-2">
             Electronic Medical Records System
           </p>
@@ -75,12 +78,12 @@ const LoginPage = () => {
             {errors.email && <FormError errorMessage={errors.email.message} />}
           </div>
 
-          <div>
+          <div className="relative">
             <FormLabel htmlFor="password">Password</FormLabel>
             <FormInput
               autoComplete="current-password"
               {...register("password")}
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               placeholder="••••••••••"
               disabled={isSubmitting}
@@ -88,6 +91,19 @@ const LoginPage = () => {
             {errors.password && (
               <FormError errorMessage={errors.password.message} />
             )}
+            <button
+              title={showPassword ? "Hide Password" : "Show Password"}
+              type="button"
+              onClick={() => {
+                setShowPassword((prev) => !prev);
+              }}
+            >
+              {showPassword ? (
+                <EyeOff className="absolute top-8 right-5" size={18} />
+              ) : (
+                <Eye className="absolute top-8 right-5" size={18} />
+              )}
+            </button>
           </div>
 
           {/* Submit Button */}

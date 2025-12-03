@@ -16,6 +16,8 @@ export const patientEditSchema = z.object({
   surname: z.string().min(1, "Surname is required"),
   other_names: z.string().min(1, "Other names are required"),
   phone: z.string().min(10, "Valid phone number required"),
+  gender: z.enum(["male", "female"]),
+  date_of_birth: z.string(),
   email: z.email("Valid email required").optional().or(z.literal("")),
   address: z.string().optional(),
   civil_state: z.string().optional(),
