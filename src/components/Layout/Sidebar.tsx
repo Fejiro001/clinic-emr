@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import {
   ClipboardList,
@@ -59,9 +59,31 @@ const navItems = [
   },
 ];
 
-const Sidebar = () => {
-  const location = useLocation();
+const Sidebar = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen?: boolean;
+  setIsOpen?: (arg0: boolean) => void;
+}) => {
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  if (!isOpen && !isDesktop) return null;
 
   return (
     <>
@@ -89,6 +111,9 @@ const Sidebar = () => {
                     <li>
                       <Link
                         to={item.path}
+                        onClick={() => {
+                          if (setIsOpen) setIsOpen(false);
+                        }}
                         title={item.label}
                         className={`sidebar_links ${location.pathname === item.path ? "bg-primary-800 text-white" : ""}`}
                       >

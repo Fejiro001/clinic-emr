@@ -13,7 +13,13 @@ import {
 } from "../../components/Patients";
 import { useInpatientStore } from "../../store/inpatientStore";
 import { useOutpatientStore } from "../../store/outpatientStore";
-import { Activity, FileText, Hospital, Loader2, Stethoscope } from "lucide-react";
+import {
+  Activity,
+  FileText,
+  Hospital,
+  Loader2,
+  Stethoscope,
+} from "lucide-react";
 import { useOperationsStore } from "../../store/operationsStore";
 
 interface LocationState {
@@ -142,25 +148,27 @@ const PatientDetails = () => {
                 onClick={() => {
                   setActiveTab(tab.id);
                 }}
-                className={`flex flex-wrap items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`tabs ${
                   activeTab === tab.id
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 {tab.icon}
-                <span>{tab.label}</span>
-                {tab.count !== undefined && (
-                  <span
-                    className={`px-2 py-0.5 text-xs rounded-full ${
-                      activeTab === tab.id
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 text-gray-700"
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-                )}
+                <div className="space-x-2">
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && (
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded-full ${
+                        activeTab === tab.id
+                          ? "bg-primary-900 text-white"
+                          : "bg-gray-300 text-gray-800"
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </div>
               </button>
             ))}
           </div>

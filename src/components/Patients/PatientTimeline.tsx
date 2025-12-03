@@ -1,12 +1,11 @@
-// components/Patients/PatientTimeline.tsx
 import { useState, useEffect } from "react";
 import {
   Calendar,
-  Activity,
   Stethoscope,
   Scissors,
   ChevronDown,
   ChevronUp,
+  Hospital,
 } from "lucide-react";
 import type {
   InpatientRecord,
@@ -100,7 +99,7 @@ const PatientTimeline = ({
   const getEventIcon = (type: TimelineEvent["type"]) => {
     switch (type) {
       case "inpatient":
-        return <Activity className="text-yellow-600" size={20} />;
+        return <Hospital className="text-yellow-600" size={20} />;
       case "outpatient":
         return <Stethoscope className="text-blue-600" size={20} />;
       case "operation":

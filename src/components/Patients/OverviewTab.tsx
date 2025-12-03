@@ -18,21 +18,56 @@ const OverviewTab = ({
   operationCount: number;
   recentActivity: (InpatientRecord | OutpatientVisit)[];
 }) => {
-  const quickStats: { count: number; title: string; bgColor: string }[] = [
+  const quickStats = [
     {
       count: outpatientCount,
       title: "Outpatient Visits",
-      bgColor: "from-blue-500 to-blue-600",
+      bgColor: "from-primary-500 to-primary-600",
     },
     {
       count: inpatientCount,
       title: "Admissions",
-      bgColor: "from-yellow-500 to-yellow-600",
+      bgColor: "from-orange-500 to-orange-600",
     },
     {
       count: operationCount,
       title: "Operations",
       bgColor: "from-green-500 to-green-600",
+    },
+  ];
+
+  const information = [
+    {
+      label: "Date of Birth:",
+      value: new Date(patient.date_of_birth).toLocaleDateString(),
+    },
+    {
+      label: "Gender:",
+      value: patient.gender,
+    },
+    {
+      label: "Civil State:",
+      value: patient.civil_state ?? "N/A",
+    },
+    {
+      label: "Occupation:",
+      value: patient.occupation ?? "N/A",
+    },
+    {
+      label: "Tribe/Nationality:",
+      value: patient.tribe_nationality ?? "N/A",
+    },
+    {
+      label: "Next of Kin:",
+      value: patient.next_of_kin ?? "N/A",
+    },
+    {
+      label: "Relationship:",
+      value: patient.relationship_to_patient ?? "N/A",
+    },
+    {
+      label: "Address:",
+      value: patient.address_next_of_kin ?? "N/A",
     },
   ];
 
@@ -46,7 +81,7 @@ const OverviewTab = ({
             className={`${stats.bgColor} bg-gradient-to-br text-white rounded-md p-4`}
           >
             <div className="text-3xl font-bold">{stats.count}</div>
-            <div className="text-blue-100 text-sm">{stats.title}</div>
+            <div className="text-sm">{stats.title}</div>
           </div>
         ))}
       </div>
@@ -55,76 +90,34 @@ const OverviewTab = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Information */}
         <div className="overview_tab_sections">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">
-            Personal Information
-          </h3>
+          <h3 className="tab_sections_titles">Personal Information</h3>
           <dl className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Date of Birth:</dt>
-              <dd className="font-medium text-gray-900">
-                {new Date(patient.date_of_birth).toLocaleDateString()}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Gender:</dt>
-              <dd className="font-medium text-gray-900 capitalize">
-                {patient.gender}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Civil State:</dt>
-              <dd className="font-medium text-gray-900">
-                {patient.civil_state ?? "N/A"}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Occupation:</dt>
-              <dd className="font-medium text-gray-900">
-                {patient.occupation ?? "N/A"}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Tribe/Nationality:</dt>
-              <dd className="font-medium text-gray-900">
-                {patient.tribe_nationality ?? "N/A"}
-              </dd>
-            </div>
+            {information.slice(0, 5).map((info) => (
+              <div className="flex justify-between">
+                <dt className="text-gray-600">{info.label}</dt>
+                <dd className="font-medium text-gray-900">{info.value}</dd>
+              </div>
+            ))}
           </dl>
         </div>
 
         {/* Emergency Contact */}
         <div className="overview_tab_sections">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">
-            Emergency Contact
-          </h3>
+          <h3 className="tab_sections_titles">Emergency Contact</h3>
           <dl className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Next of Kin:</dt>
-              <dd className="font-medium text-gray-900">
-                {patient.next_of_kin ?? "N/A"}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600">Relationship:</dt>
-              <dd className="font-medium text-gray-900">
-                {patient.relationship_to_patient ?? "N/A"}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600 mb-1">Address:</dt>
-              <dd className="font-medium text-gray-900">
-                {patient.address_next_of_kin ?? "N/A"}
-              </dd>
-            </div>
+            {information.slice(5).map((info) => (
+              <div className="flex justify-between">
+                <dt className="text-gray-600">{info.label}</dt>
+                <dd className="font-medium text-gray-900">{info.value}</dd>
+              </div>
+            ))}
           </dl>
         </div>
       </div>
 
       {/* Recent Activity */}
       <div className="overview_tab_sections">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-          Recent Activity
-        </h3>
+        <h3 className="tab_sections_titles">Recent Activity</h3>
         {recentActivity.length === 0 ? (
           <p className="text-gray-500 text-sm">No recent activity</p>
         ) : (
