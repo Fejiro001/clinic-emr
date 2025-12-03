@@ -1,5 +1,9 @@
 import { Activity, Stethoscope } from "lucide-react";
-import type { InpatientRecord, OutpatientVisit, Patient } from "../../types/supabase";
+import type {
+  InpatientRecord,
+  OutpatientVisit,
+  Patient,
+} from "../../types/supabase";
 
 const OverviewTab = ({
   patient,
@@ -14,39 +18,43 @@ const OverviewTab = ({
   operationCount: number;
   recentActivity: (InpatientRecord | OutpatientVisit)[];
 }) => {
-  const calculateAge = (dob: string) => {
-    const age = new Date().getFullYear() - new Date(dob).getFullYear();
-    return age;
-  };
+  const quickStats: { count: number; title: string; bgColor: string }[] = [
+    {
+      count: outpatientCount,
+      title: "Outpatient Visits",
+      bgColor: "from-blue-500 to-blue-600",
+    },
+    {
+      count: inpatientCount,
+      title: "Admissions",
+      bgColor: "from-yellow-500 to-yellow-600",
+    },
+    {
+      count: operationCount,
+      title: "Operations",
+      bgColor: "from-green-500 to-green-600",
+    },
+  ];
 
   return (
     <div className="space-y-6">
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-4">
-          <div className="text-3xl font-bold">{outpatientCount}</div>
-          <div className="text-blue-100 text-sm">Outpatient Visits</div>
-        </div>
-        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-lg p-4">
-          <div className="text-3xl font-bold">{inpatientCount}</div>
-          <div className="text-yellow-100 text-sm">Admissions</div>
-        </div>
-        <div className="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-lg p-4">
-          <div className="text-3xl font-bold">{operationCount}</div>
-          <div className="text-red-100 text-sm">Operations</div>
-        </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-4">
-          <div className="text-3xl font-bold">
-            {calculateAge(patient.date_of_birth)}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {quickStats.map((stats) => (
+          <div
+            key={stats.title}
+            className={`${stats.bgColor} bg-gradient-to-br text-white rounded-md p-4`}
+          >
+            <div className="text-3xl font-bold">{stats.count}</div>
+            <div className="text-blue-100 text-sm">{stats.title}</div>
           </div>
-          <div className="text-green-100 text-sm">Years Old</div>
-        </div>
+        ))}
       </div>
 
       {/* Patient Information Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Information */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="overview_tab_sections">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">
             Personal Information
           </h3>
@@ -85,7 +93,7 @@ const OverviewTab = ({
         </div>
 
         {/* Emergency Contact */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="overview_tab_sections">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">
             Emergency Contact
           </h3>
@@ -102,7 +110,7 @@ const OverviewTab = ({
                 {patient.relationship_to_patient ?? "N/A"}
               </dd>
             </div>
-            <div>
+            <div className="flex justify-between">
               <dt className="text-gray-600 mb-1">Address:</dt>
               <dd className="font-medium text-gray-900">
                 {patient.address_next_of_kin ?? "N/A"}
@@ -113,7 +121,7 @@ const OverviewTab = ({
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="overview_tab_sections">
         <h3 className="text-lg font-semibold mb-4 text-gray-900">
           Recent Activity
         </h3>

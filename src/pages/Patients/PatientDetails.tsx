@@ -13,7 +13,7 @@ import {
 } from "../../components/Patients";
 import { useInpatientStore } from "../../store/inpatientStore";
 import { useOutpatientStore } from "../../store/outpatientStore";
-import { Activity, FileText, Loader2, Stethoscope } from "lucide-react";
+import { Activity, FileText, Hospital, Loader2, Stethoscope } from "lucide-react";
 import { useOperationsStore } from "../../store/operationsStore";
 
 interface LocationState {
@@ -38,9 +38,9 @@ const PatientDetails = () => {
   const { outpatientVisits } = useOutpatientStore();
   const { operations } = useOperationsStore();
 
-  // const isCurrentlyAdmitted = inpatientRecords.some(
-  //   (record) => !record.date_of_discharge
-  // );
+  const isCurrentlyAdmitted = inpatientRecords.some(
+    (record) => !record.date_of_discharge
+  );
 
   useEffect(() => {
     if (!patientId) {
@@ -111,7 +111,7 @@ const PatientDetails = () => {
     {
       id: "inpatient",
       label: "Inpatient",
-      icon: <Activity size={18} />,
+      icon: <Hospital size={18} />,
       count: inpatientRecords.length,
     },
     {
@@ -126,11 +126,15 @@ const PatientDetails = () => {
     <section className="space-y-4">
       <Breadcrumbs>Patient Details</Breadcrumbs>
 
-      <PatientHeader patient={patient} onUpdate={setPatient} />
+      <PatientHeader
+        patient={patient}
+        onUpdate={setPatient}
+        isCurrentlyAdmitted={isCurrentlyAdmitted}
+      />
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200">
+      <div className="rounded-md shadow-md shadow-dark-surface border border-gray-300">
+        <div className="border-b border-gray-300">
           <div className="flex gap-1 p-2">
             {tabs.map((tab) => (
               <button
@@ -138,7 +142,7 @@ const PatientDetails = () => {
                 onClick={() => {
                   setActiveTab(tab.id);
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex flex-wrap items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   activeTab === tab.id
                     ? "bg-blue-600 text-white"
                     : "text-gray-600 hover:bg-gray-100"

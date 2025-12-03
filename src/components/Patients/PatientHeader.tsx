@@ -18,10 +18,12 @@ import {
 import { calculateAge } from "../../utils/dateUtils";
 import { patientQueries } from "../../services/queries";
 import { showToast } from "../../utils/toast";
+import { patientDetails } from "../../constants/patientDetails";
+import { Button } from "../Common";
 
-type PatientEditForm = z.infer<typeof patientEditSchema>;
+export type PatientEditForm = z.infer<typeof patientEditSchema>;
 
-interface PatientHeaderProps {
+export interface PatientHeaderProps {
   patient: Patient;
   onUpdate: (updated: Patient) => void;
   isCurrentlyAdmitted?: boolean;
@@ -45,6 +47,8 @@ const PatientHeader = ({
       surname: patient.surname,
       other_names: patient.other_names,
       phone: patient.phone,
+      gender: patient.gender,
+      date_of_birth: patient.date_of_birth,
       email: patient.email ?? "",
       address: patient.address ?? "",
       civil_state: patient.civil_state ?? "",
@@ -59,32 +63,17 @@ const PatientHeader = ({
 
   const submitEditedData = async (data: PatientEditForm) => {
     try {
-      const success = await patientQueries.updateRecord(patient.id, {
-        surname: data.surname,
-        other_names: data.other_names,
-        phone: data.phone,
-        email: data.email ?? undefined,
-        address: data.address ?? undefined,
-        civil_state: data.civil_state ?? undefined,
-        occupation: data.occupation ?? undefined,
-        place_of_work: data.place_of_work ?? undefined,
-        tribe_nationality: data.tribe_nationality ?? undefined,
-        next_of_kin: data.next_of_kin ?? undefined,
-        relationship_to_patient: data.relationship_to_patient ?? undefined,
-        address_next_of_kin: data.address_next_of_kin ?? undefined,
-      });
+      const success = await patientQueries.updateRecord(patient.id, data);
 
       if (success) {
-        // Update local state
         onUpdate({ ...patient, ...data });
         setIsEditing(false);
         showToast.success("Patient information updated successfully");
       } else {
         showToast.error("Failed to update patient information");
       }
-    } catch (error) {
+    } catch {
       showToast.error("Failed to update patient information");
-      console.error("Update error:", error);
     }
   };
 
@@ -93,51 +82,97 @@ const PatientHeader = ({
     setIsEditing(false);
   };
 
-//   const handleEdit = () => {
-//     // Reset form with current patient data when entering edit mode
-//     reset({
-//       surname: patient.surname,
-//       other_names: patient.other_names,
-//       phone: patient.phone,
-//       email: patient.email ?? "",
-//       address: patient.address ?? "",
-//       civil_state: patient.civil_state ?? "",
-//       occupation: patient.occupation ?? "",
-//       place_of_work: patient.place_of_work ?? "",
-//       tribe_nationality: patient.tribe_nationality ?? "",
-//       next_of_kin: patient.next_of_kin ?? "",
-//       relationship_to_patient: patient.relationship_to_patient ?? "",
-//       address_next_of_kin: patient.address_next_of_kin ?? "",
-//     });
-//     setIsEditing(true);
-//   };
+  const handleEdit = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    reset({
+      surname: patient.surname,
+      other_names: patient.other_names,
+      phone: patient.phone,
+      gender: patient.gender,
+      date_of_birth: patient.date_of_birth,
+      email: patient.email ?? "",
+      address: patient.address ?? "",
+      civil_state: patient.civil_state ?? "",
+      occupation: patient.occupation ?? "",
+      place_of_work: patient.place_of_work ?? "",
+      tribe_nationality: patient.tribe_nationality ?? "",
+      next_of_kin: patient.next_of_kin ?? "",
+      relationship_to_patient: patient.relationship_to_patient ?? "",
+      address_next_of_kin: patient.address_next_of_kin ?? "",
+    });
+    setIsEditing(true);
+  };
 
   return (
-    <form
-      onSubmit={void handleSubmit(submitEditedData)}
-      className="bg-white rounded-md shadow-lg border border-gray-200 p-6"
-    >
-      <div className="border-b pb-4 border-b-gray-400">
-        {!isCurrentlyAdmitted && (
-          <div className="mb-4 px-2 py-1 bg-primary-50 border border-primary-200 rounded-md w-fit">
-            <span className="text-primary-800 font-medium text-sm">
-              ℹ️ Currently Admitted
-            </span>
-          </div>
-        )}
+    <>
+      <form
+        className="space-y-2"
+        onSubmit={(e) => {
+          void handleSubmit(submitEditedData)(e);
+        }}
+      >
+        {/* Right: Actions */}
+        <div className="flex justify-end gap-2">
+          {isEditing ? (
+            <>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                variant="success"
+                className="flex items-center gap-2"
+              >
+                <Save size={16} />
+                {isSubmitting ? "Saving..." : "Save"}
+              </Button>
+              <Button
+                onClick={handleCancel}
+                disabled={isSubmitting}
+                variant="secondary"
+                className="flex items-center gap-2"
+              >
+                <X size={16} />
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleEdit();
+              }}
+              className="flex items-center gap-2"
+            >
+              <Edit2 size={16} />
+              Edit
+            </Button>
+          )}
+        </div>
 
-        <div className="flex items-start justify-between">
-          <div className="flex gap-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center text-white text-lg font-bold">
-              {patient.surname[0]}
-              {patient.other_names[0]}
+        <div className="bg-white rounded-md shadow-md shadow-dark-surface border border-gray-200 p-6">
+          {isCurrentlyAdmitted && (
+            <div className="mb-4 px-2 py-1 bg-primary-50 border border-primary-200 rounded-md w-fit">
+              <span className="text-primary-800 font-medium text-sm">
+                ℹ️ Currently Admitted
+              </span>
             </div>
+          )}
 
-            {/* Patient Details */}
-            <div className="space-y-2 flex-1">
-              {isEditing ? (
-                <div className="space-y-2">
-                  <div className="flex gap-2">
+          <div className="flex items-start justify-between">
+            <div className="flex gap-4">
+              {!isEditing && (
+                <div className="patient_initials">
+                  {patient.surname[0]}
+                  {patient.other_names[0]}
+                </div>
+              )}
+
+              {/* Patient Details */}
+              <div className="space-y-3">
+                {isEditing ? (
+                  <div className="flex gap-3">
                     <div>
                       <FormLabel htmlFor="surname">Surname</FormLabel>
                       <FormInput
@@ -166,219 +201,168 @@ const PatientHeader = ({
                       )}
                     </div>
                   </div>
-                </div>
-              ) : (
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {patient.surname} {patient.other_names}
-                </h2>
-              )}
+                ) : (
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {patient.surname} {patient.other_names}
+                  </h2>
+                )}
 
-              {/* Basic Info Row */}
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <User size={16} />
-                  <span className="capitalize">{patient.gender}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar size={16} />
-                  <span>{calculateAge(patient.date_of_birth)} years old</span>
-                </div>
-                <div className="text-gray-700 text-lg">•</div>
-                <span>Unit: {patient.unit_number}</span>
-              </div>
+                <div className="flex flex-wrap gap-3">
+                  {isEditing ? (
+                    <>
+                      <div>
+                        <FormLabel htmlFor="gender">Gender</FormLabel>
+                        <select
+                          id="gender"
+                          {...register("gender")}
+                          className="input_style"
+                        >
+                          <option value="">Select gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
+                        {errors.gender && (
+                          <p className="text-red-500 text-xs mt-1 ml-6">
+                            {errors.gender.message}
+                          </p>
+                        )}
+                      </div>
 
-              <div className="flex flex-wrap gap-4 text-sm">
-                {isEditing ? (
-                  <>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Phone size={16} className="text-gray-500" />
+                      <div>
+                        <FormLabel htmlFor="date_of_birth">
+                          Date of Birth
+                        </FormLabel>
                         <FormInput
-                          id="tel"
+                          id="date_of_birth"
+                          type="date"
+                          {...register("date_of_birth")}
+                          placeholder="Date of Birth"
+                        />
+                        {errors.date_of_birth && (
+                          <p className="text-red-500 text-xs mt-1 ml-6">
+                            {errors.date_of_birth.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <FormLabel htmlFor="phone">Phone Number</FormLabel>
+                        <FormInput
+                          id="phone"
                           type="tel"
                           {...register("phone")}
                           placeholder="Phone"
                         />
+                        {errors.phone && (
+                          <p className="text-red-500 text-xs mt-1 ml-6">
+                            {errors.phone.message}
+                          </p>
+                        )}
                       </div>
-                      {errors.phone && (
-                        <p className="text-red-500 text-xs mt-1 ml-6">
-                          {errors.phone.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Mail size={16} className="text-gray-500" />
+
+                      <div>
+                        <FormLabel htmlFor="email">Email</FormLabel>
                         <FormInput
                           id="email"
                           {...register("email")}
                           type="email"
                           placeholder="Email (optional)"
                         />
+                        {errors.email && (
+                          <p className="text-red-500 text-xs mt-1 ml-6">
+                            {errors.email.message}
+                          </p>
+                        )}
                       </div>
-                      {errors.email && (
-                        <p className="text-red-500 text-xs mt-1 ml-6">
-                          {errors.email.message}
-                        </p>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2 text-gray-700">
-                      <Phone size={16} className="text-gray-400" />
-                      <span>{patient.phone}</span>
-                    </div>
-                    {patient.email && (
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Mail size={16} className="text-gray-400" />
-                        <span>{patient.email}</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
+                        <div className="patient_header_icons">
+                          <User size={16} />
+                          <span className="capitalize">{patient.gender}</span>
+                        </div>
+
+                        <div className="patient_header_icons">
+                          <Calendar size={16} />
+                          <span>
+                            {calculateAge(patient.date_of_birth)} years old
+                          </span>
+                        </div>
+
+                        <div className="patient_header_icons">
+                          <Phone size={16} />
+                          <span>{patient.phone}</span>
+                        </div>
+
+                        {patient.email && (
+                          <div className="patient_header_icons">
+                            <Mail size={16} />
+                            <span>{patient.email}</span>
+                          </div>
+                        )}
+
+                        {patient.address && (
+                          <div className="patient_header_icons">
+                            <MapPin size={16} />
+                            <span className="max-w-xs truncate">
+                              {patient.address}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                    {patient.address && (
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <MapPin size={16} className="text-gray-400" />
-                        <span className="max-w-xs truncate">
-                          {patient.address}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex gap-2">
-            {isEditing ? (
-              <>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                >
-                  <Save size={16} />
-                  {isSubmitting ? "Saving..." : "Save"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  disabled={isSubmitting}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
-                >
-                  <X size={16} />
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                // onClick={handleEdit}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <Edit2 size={16} />
-                Edit
-              </button>
-            )}
-          </div>
-        </div>
+          {/* Expandable Details Section - Only show in edit mode */}
+          {isEditing && (
+            <div className="mt-6 pt-6 border-t border-gray-400 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <FormLabel htmlFor="address">Address</FormLabel>
+                <textarea
+                  id="address"
+                  className="w-full input_style"
+                  {...register("address")}
+                  rows={1}
+                  placeholder="Patient address"
+                />
+              </div>
 
-        {/* Expandable Details Section - Only show in edit mode */}
-        {isEditing && (
-          <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Address
-              </label>
-              <textarea
-                {...register("address")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                rows={2}
-                placeholder="Patient address"
-              />
+              {patientDetails.map((details) => (
+                <div key={details.inputId}>
+                  <FormLabel htmlFor={details.inputId}>
+                    {details.label}
+                  </FormLabel>
+                  <FormInput
+                    id={details.inputId}
+                    type={details.type}
+                    {...register(details.inputId)}
+                    placeholder={details.placeholder}
+                  />
+                </div>
+              ))}
+
+              <div>
+                <FormLabel htmlFor="address_next_of_kin">
+                  Next of Kin Address
+                </FormLabel>
+                <textarea
+                  id="address_next_of_kin"
+                  className="w-full input_style"
+                  {...register("address_next_of_kin")}
+                  rows={1}
+                  placeholder="Emergency contact address"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Civil State
-              </label>
-              <input
-                type="text"
-                {...register("civil_state")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Single, Married"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Occupation
-              </label>
-              <input
-                type="text"
-                {...register("occupation")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Patient occupation"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Place of Work
-              </label>
-              <input
-                type="text"
-                {...register("place_of_work")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Workplace"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tribe/Nationality
-              </label>
-              <input
-                type="text"
-                {...register("tribe_nationality")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Tribe or nationality"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Next of Kin
-              </label>
-              <input
-                type="text"
-                {...register("next_of_kin")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Emergency contact name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Relationship to Patient
-              </label>
-              <input
-                type="text"
-                {...register("relationship_to_patient")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Spouse, Parent, Sibling"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Next of Kin Address
-              </label>
-              <input
-                type="text"
-                {...register("address_next_of_kin")}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Emergency contact address"
-              />
-            </div>
-          </div>
-        )}
-      </div>
-    </form>
+          )}
+        </div>
+      </form>
+    </>
   );
 };
 
