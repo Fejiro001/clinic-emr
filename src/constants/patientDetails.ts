@@ -2,6 +2,7 @@ type InputIds =
   | "civil_state"
   | "occupation"
   | "place_of_work"
+  | "religion"
   | "tribe_nationality"
   | "next_of_kin"
   | "relationship_to_patient"
@@ -19,6 +20,12 @@ export const patientDetails: {
   placeholder: string;
 }[] = [
   {
+    label: "Email",
+    type: "text",
+    inputId: "email",
+    placeholder: "Email (Optional)",
+  },
+  {
     label: "Civil State",
     type: "text",
     inputId: "civil_state",
@@ -35,6 +42,12 @@ export const patientDetails: {
     type: "text",
     inputId: "place_of_work",
     placeholder: "Workplace",
+  },
+  {
+    label: "Religion",
+    type: "text",
+    inputId: "religion",
+    placeholder: "Religion",
   },
   {
     label: "Tribe/Nationality",

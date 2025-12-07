@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DashboardCard } from "../components/Dashboard";
 import { dashboardQueries, type DashboardStats } from "../services/queries";
 import { showToast } from "../utils/toast";
+import { Link } from "react-router";
 
 const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
@@ -73,12 +74,15 @@ const Dashboard = () => {
         <Breadcrumbs>Dashboard</Breadcrumbs>
 
         <div className="flex items-center gap-4">
-          <button className="bg-accent-green hover:bg-green-700 add_patient_btns">
+          <Link
+            to={"/patients/inpatients/create-inpatient"}
+            className="bg-green-600 hover:bg-green-800 add_patient_btns"
+          >
             <Plus size={18} />
             Admit Patient
-          </button>
+          </Link>
 
-          <button className="bg-accent-purple hover:bg-purple-700 add_patient_btns">
+          <button className="bg-purple-600 hover:bg-purple-800 add_patient_btns">
             <Plus size={18} />
             New Outpatient
           </button>

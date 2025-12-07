@@ -58,6 +58,10 @@ const OverviewTab = ({
       value: patient.tribe_nationality ?? "N/A",
     },
     {
+      label: "Religion:",
+      value: patient.religion ?? "N/A",
+    },
+    {
       label: "Next of Kin:",
       value: patient.next_of_kin ?? "N/A",
     },
@@ -92,7 +96,7 @@ const OverviewTab = ({
         <div className="overview_tab_sections">
           <h3 className="tab_sections_titles">Personal Information</h3>
           <dl className="space-y-3 text-sm">
-            {information.slice(0, 5).map((info) => (
+            {information.slice(0, 6).map((info) => (
               <div className="flex justify-between">
                 <dt className="text-gray-600">{info.label}</dt>
                 <dd className="font-medium text-gray-900">{info.value}</dd>
@@ -105,7 +109,7 @@ const OverviewTab = ({
         <div className="overview_tab_sections">
           <h3 className="tab_sections_titles">Emergency Contact</h3>
           <dl className="space-y-3 text-sm">
-            {information.slice(5).map((info) => (
+            {information.slice(6).map((info) => (
               <div className="flex justify-between">
                 <dt className="text-gray-600">{info.label}</dt>
                 <dd className="font-medium text-gray-900">{info.value}</dd>

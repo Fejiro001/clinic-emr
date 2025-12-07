@@ -259,21 +259,6 @@ const PatientHeader = ({
                           </p>
                         )}
                       </div>
-
-                      <div>
-                        <FormLabel htmlFor="email">Email</FormLabel>
-                        <FormInput
-                          id="email"
-                          {...register("email")}
-                          type="email"
-                          placeholder="Email (optional)"
-                        />
-                        {errors.email && (
-                          <p className="text-red-500 text-xs mt-1 ml-6">
-                            {errors.email.message}
-                          </p>
-                        )}
-                      </div>
                     </>
                   ) : (
                     <>

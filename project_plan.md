@@ -114,15 +114,15 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Create patient registry list page (view/search only)
 - [x] Implement pagination (infinite scroll, 50 items/page)
 - [x] Build search by name/phone/DOB
-- [ ] Create patient detail view with medical history
-- [ ] Implement soft deletes (exclude deleted_at IS NOT NULL)
+- [x] Create patient detail view with medical history
+<!-- - [ ] Implement soft deletes (exclude deleted_at IS NOT NULL) -->
 - [ ] Add pagination to patient history timeline
 - [ ] Test with 1000+ test patients
 
 ### 1.10 Inpatient Management (Week 5-6)
 
-- [ ] Create inpatient admission form (2 sections: patient + admission)
-- [ ] Implement duplicate patient detection (phone/name+DOB)
+- [x] Create inpatient admission form (2 sections: patient + admission)
+- [x] Implement duplicate patient detection (phone/name+DOB)
 - [ ] Implement auto-create patient if not exists
 - [ ] Add comprehensive Zod validation
 - [ ] Create discharge form
@@ -171,7 +171,7 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 
 ### 1.15 Dashboard (Week 10)
 
-- [ ] Create stats cards (total patients, admitted, visits today)
+- [x] Create stats cards (total patients, admitted, visits today)
 - [ ] Implement metrics that auto-update (React Query)
 - [ ] Add conversion metrics widget
 - [ ] Test performance with large datasets
@@ -256,7 +256,8 @@ clinic-emr/
 │   │   └── AuditLogsPage.tsx
 │   ├── services/
 │   │   ├── supabase.ts (Supabase client + auth)
-│   │   ├── sync.ts (Sync engine logic)
+│   │   ├── pushSync.ts (Sync engine logic)
+│   │   ├── pullSync.ts (Sync engine logic)
 │   │   ├── syncQueue.ts (Sync queue logic)
 │   │   ├── batchOperations.ts (Batch operations logic)
 │   │   ├── auth.ts (Auth helpers)
@@ -845,6 +846,8 @@ full_name
 role (ENUM: doctor, secretary, nurse, admin)
 created_at (TIMESTAMPTZ)
 updated_at (TIMESTAMPTZ)
+deleted_at (TIMESTAMPTZ, nullable) -- Soft delete
+synced_at (TIMESTAMPTZ)
 ```
 
 ### Patients Table

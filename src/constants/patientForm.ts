@@ -1,0 +1,132 @@
+import type { InpatientAdmissionForm } from "../pages/Inpatients/CreateInpatient";
+
+export const patientForm: {
+  inputType: string;
+  required: boolean;
+  label: string;
+  inputId: keyof InpatientAdmissionForm;
+  placeholder: string;
+  type?: string;
+  options?: string[];
+  className?: string;
+}[] = [
+  {
+    inputType: "input",
+    required: true,
+    label: "Surname",
+    inputId: "surname",
+    placeholder: "Patient surname",
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Other Names",
+    inputId: "other_names",
+    placeholder: "Patient other names",
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Date of Birth",
+    inputId: "date_of_birth",
+    placeholder: "",
+    type: "date",
+  },
+  {
+    inputType: "dropdown",
+    required: true,
+    label: "Gender",
+    inputId: "gender",
+    placeholder: "",
+    options: ["male", "female"],
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Phone",
+    inputId: "phone",
+    placeholder: "Phone number",
+    type: "tel",
+  },
+  {
+    inputType: "input",
+    required: false,
+    label: "Email",
+    inputId: "email",
+    placeholder: "Email (optional)",
+    type: "email",
+  },
+  {
+    inputType: "textarea",
+    required: true,
+    label: "Address",
+    inputId: "address",
+    placeholder: "Patient address",
+  },
+  {
+    inputType: "dropdown",
+    required: false,
+    label: "Civil State",
+    inputId: "civil_state",
+    placeholder: "Civil State (optional)",
+    options: [
+      "single",
+      "married",
+      "divorced",
+      "widowed",
+      "separated",
+      "civil partner",
+      "others",
+    ],
+  },
+  {
+    inputType: "input",
+    required: false,
+    label: "Occupation",
+    inputId: "occupation",
+    placeholder: "Occupation (optional)",
+  },
+  {
+    inputType: "input",
+    required: false,
+    label: "Place of Work",
+    inputId: "place_of_work",
+    placeholder: "Place of Work (optional)",
+  },
+  {
+    inputType: "dropdown",
+    required: false,
+    label: "Religion",
+    inputId: "religion",
+    placeholder: "Religion (optional)",
+    options: ["none", "christianity", "islam", "others"],
+  },
+  {
+    inputType: "input",
+    required: false,
+    label: "Tribe/Nationality",
+    inputId: "tribe_nationality",
+    placeholder: "Tribe/Nationality (optional)",
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Next of Kin",
+    inputId: "next_of_kin",
+    placeholder: "Next of Kin",
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Next of Kin Relationship",
+    inputId: "relationship_to_patient",
+    placeholder: "Relationship to Next of Kin",
+  },
+  {
+    inputType: "textarea",
+    required: true,
+    label: "Next of Kin Address",
+    inputId: "address_next_of_kin",
+    placeholder: "Address of Next of Kin",
+  },
+];
