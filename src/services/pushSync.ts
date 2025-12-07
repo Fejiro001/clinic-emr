@@ -72,10 +72,6 @@ export class PushSyncService {
 
     const backoffMs = this.calculateBackoff(item.retry_count ?? 0);
 
-    console.log(
-      `Scheduling retry for item ${String(itemId)} in ${String(backoffMs / 1000)}s (attempt ${String(item.retry_count ?? 0 + 1)}/${String(MAX_RETRY_COUNT)})`
-    );
-
     const timeout = setTimeout(() => {
       this.retryTimeouts.delete(itemId);
       void this.syncAll();
@@ -113,7 +109,6 @@ export class PushSyncService {
         : pendingItems.filter((item) => this.isReadyToRetry(item));
 
       if (itemsToSync.length === 0) {
-        console.log("No items ready to retry yet (backoff period active)");
         useSyncStore.getState().setSyncStatus("synced");
 
         // Schedule retries for items still in backoff
@@ -227,10 +222,6 @@ export class PushSyncService {
       try {
         // Check retry limit
         if ((item.retry_count ?? 0) >= MAX_RETRY_COUNT) {
-          console.warn(
-            `Max retries reached for item ${String(item.id)} skipping`
-          );
-
           if (id != null) {
             await syncQueueService.updateQueueItemStatus(
               id,

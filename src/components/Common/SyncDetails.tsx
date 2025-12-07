@@ -1,5 +1,8 @@
-import { Clock10, Loader2, RefreshCcw, TriangleAlert, X } from "lucide-react";
+import { useState } from "react";
+import { Clock10, TriangleAlert, X } from "lucide-react";
 import type { FailedItem } from "../../types";
+import { syncCoordinator } from "../../services/syncCoordinator";
+import SyncActionButtons from "./SyncActionButtons";
 
 interface SyncDetailsProps {
   setShowDetails: (show: boolean) => void;
@@ -24,11 +27,38 @@ const SyncDetails = ({
   handleRetryFailed,
   handleSyncNow,
 }: SyncDetailsProps) => {
+  const [isPulling, setIsPulling] = useState(false);
+  const [isPushing, setIsPushing] = useState(false);
+
   const formatTime = (seconds: number): string => {
     if (seconds < 60) return `${String(seconds)}s`;
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${String(minutes)}m ${String(secs)}s`;
+  };
+
+  const handlePullOnly = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isOnline || isPulling || isRetrying) return;
+
+    setIsPulling(true);
+    try {
+      await syncCoordinator.pullNow();
+    } finally {
+      setIsPulling(false);
+    }
+  };
+
+  const handlePushOnly = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isOnline || isPushing || isRetrying || pendingCount === 0) return;
+
+    setIsPushing(true);
+    try {
+      await syncCoordinator.pushNow();
+    } finally {
+      setIsPushing(false);
+    }
   };
 
   return (
@@ -126,38 +156,20 @@ const SyncDetails = ({
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 pt-2 border-t">
-          {isOnline && failedItems.length > 0 && (
-            <button
-              onClick={handleRetryFailed}
-              disabled={isRetrying}
-              className="flex flex-1 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {isRetrying ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCcw className="h-4 w-4" />
-              )}
-              Retry Failed Items
-            </button>
-          )}
-
-          {isOnline && (
-            <button
-              onClick={handleSyncNow}
-              disabled={isRetrying}
-              className="flex flex-1 items-center justify-center gap-2 rounded-md border border-blue-600 bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {isRetrying ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCcw className="h-4 w-4" />
-              )}
-              Force Sync Now
-            </button>
-          )}
-        </div>
+        {/* Action Buttons Section */}
+        {isOnline && (
+          <SyncActionButtons
+            pendingCount={pendingCount}
+            handleSyncNow={handleSyncNow}
+            isRetrying={isRetrying}
+            isPulling={isPulling}
+            isPushing={isPushing}
+            failedItems={failedItems}
+            handlePullOnly={handlePullOnly}
+            handlePushOnly={handlePushOnly}
+            handleRetryFailed={handleRetryFailed}
+          />
+        )}
 
         {!isOnline && (
           <div className="text-center text-sm text-gray-500 py-2">

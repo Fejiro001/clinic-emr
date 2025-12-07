@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { useSyncStore } from "../store/syncStore";
 import { pushSyncService } from "../services/pushSync";
 import { syncQueueService } from "../services/syncQueue";
+import { syncCoordinator } from "../services/syncCoordinator";
 import { authService } from "../services/auth";
 import { showToast } from "../utils/toast";
 
 /**
- * Hook to monitor network status and update sync store
+ * Hook to monitor network status and update sync store. Includes bidirectional sync coordination
  */
 const useNetworkStatus = () => {
   useEffect(() => {
@@ -20,6 +21,10 @@ const useNetworkStatus = () => {
       // Update pending count on app startup
       const pendingCount = await syncQueueService.getPendingCount();
       useSyncStore.getState().setPendingCount(pendingCount);
+
+      if (isOnline) {
+        await syncCoordinator.initializeOnStartup();
+      }
 
       // If online and has pending items, check if any failed items need to retry
       if (isOnline && pendingCount > 0) {
@@ -80,6 +85,8 @@ const useNetworkStatus = () => {
 
         if (syncTimeout) clearTimeout(syncTimeout);
         syncTimeout = setTimeout(() => {
+          void syncCoordinator.handleOnline();
+
           void pushSyncService.syncOnOnline();
         }, 1500);
       }
@@ -93,6 +100,7 @@ const useNetworkStatus = () => {
       showToast.warning(
         "You are offline. Changes will be synced when reconnected."
       );
+      syncCoordinator.handleOffline();
 
       // Clear any scheduled retries
       pushSyncService.clearRetrySchedules();
@@ -134,6 +142,7 @@ const useNetworkStatus = () => {
       unsubscribeOffline();
       clearInterval(intervalId);
       pushSyncService.clearRetrySchedules();
+      syncCoordinator.cleanup();
 
       if (syncTimeout) {
         clearTimeout(syncTimeout);

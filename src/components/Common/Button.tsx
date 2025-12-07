@@ -31,18 +31,19 @@ const Button = ({
   ...props
 }: ButtonProp) => {
   const baseStyle =
-    "font-medium rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed";
+    "font-medium rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-colors flex items-center justify-center cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed";
 
   const variantStyles: Record<ButtonVariant, string> = {
     primary:
-      "bg-primary-600 text-white hover:bg-blue-800 focus-visible:ring-blue-500",
+      "bg-primary-600 text-white hover:enabled:bg-blue-800 focus-visible:ring-blue-500",
     secondary:
-      "bg-gray-600 text-white hover:bg-gray-800 focus-visible:ring-gray-500",
+      "bg-gray-300 text-black hover:enabled:bg-gray-400 focus-visible:ring-gray-500",
     success:
-      "bg-green-600 text-white hover:bg-green-800 focus-visible:ring-green-500",
-    danger: "bg-red-600 text-white hover:bg-red-800 focus-visible:ring-red-500",
+      "bg-green-600 text-white hover:enabled:bg-green-800 focus-visible:ring-green-500",
+    danger:
+      "bg-red-600 text-white hover:enabled:bg-red-800 focus-visible:ring-red-500",
     outline:
-      "border border-gray-300 text-gray-700 hover:bg-gray-100 focus-visible:ring-gray-500",
+      "border border-gray-300 text-gray-700 hover:enabled:bg-gray-100 focus-visible:ring-gray-500",
     disabled: "bg-gray-200 text-gray-400 cursor-not-allowed",
   };
   const sizeStyles: Record<ButtonSize, string> = {

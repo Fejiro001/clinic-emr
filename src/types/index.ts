@@ -34,7 +34,7 @@ export interface SyncQueueItem {
   record_id: string;
   operation: SyncOperation;
   data: Record<string, unknown>;
-  status?: SyncStatus;
+  status: SyncStatus;
   retry_count?: number;
   last_retry_at?: number;
   error_message?: string;

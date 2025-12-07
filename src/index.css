@@ -90,16 +90,12 @@
 
 :root {
   scrollbar-color: #1e3a8a #dbeafe;
-  scrollbar-gutter: stable;
 }
 
 body {
   font-family: Outfit, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-button {
-  cursor: pointer;
 }
 
 /* SCROLLBAR */
@@ -133,7 +129,7 @@ button {
 
 /* SIDEBAR */
 .sidebar {
-  @apply text-dark-bg bg-white min-w-52 w-64 rounded-r-lg fixed md:sticky md:inset-auto inset-y-0 left-0 z-50 h-screen md:flex flex-col shadow-2xl transition-all duration-300;
+  @apply text-dark-bg bg-white min-w-52 w-64 rounded-r-lg fixed md:sticky md:inset-auto inset-y-0 left-0 z-50 h-screen md:flex flex-col shadow-2xl transition-all duration-300 supports-[height:100dvh]:h-dvh;
 }
 .sidebar_links {
   @apply flex items-center gap-3 m-3 p-2 rounded-md hover:bg-primary-800 hover:text-white transition-colors cursor-pointer focus-visible:ring-1 focus-visible:ring-primary-900 outline-none;
@@ -158,7 +154,7 @@ button {
 
 /* FORMS */
 .input_style {
-  @apply px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-md disabled:opacity-50;
+  @apply px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-primary-600 shadow-md disabled:opacity-50;
 }
 
 /* Patient Details */

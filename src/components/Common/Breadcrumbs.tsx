@@ -1,6 +1,12 @@
 import { Link, useLocation } from "react-router";
 
-const Breadcrumbs = ({ children }: { children: string | string[] }) => {
+const Breadcrumbs = ({
+  children,
+  pathName,
+}: {
+  children: string | string[];
+  pathName?: string;
+}) => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
@@ -28,7 +34,7 @@ const Breadcrumbs = ({ children }: { children: string | string[] }) => {
                 <span>/</span>
                 <li>
                   {activePath ? (
-                    <span>{path}</span>
+                    <span>{pathName ?? path}</span>
                   ) : (
                     <Link
                       className="text-primary-600 hover:underline"
