@@ -14,7 +14,6 @@ interface LoginCredentials {
 interface SignupData extends LoginCredentials {
   full_name: string;
   role: UserRole;
-  staff_id?: string;
 }
 
 export class AuthService {

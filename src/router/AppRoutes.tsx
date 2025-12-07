@@ -7,6 +7,7 @@ import Patients from "../pages/Patients/Patients";
 import Outpatients from "../pages/Outpatients/Outpatients";
 import Inpatients from "../pages/Inpatients/Inpatients";
 import PatientDetails from "../pages/Patients/PatientDetails";
+import CreateInpatient from "../pages/Inpatients/CreateInpatient";
 
 const AppRoutes = () => {
   return (
@@ -24,6 +25,10 @@ const AppRoutes = () => {
           <Route path="patients" element={<Patients />} />
           <Route path="patients/details" element={<PatientDetails />} />
           <Route path="patients/inpatients" element={<Inpatients />} />
+          <Route
+            path="patients/inpatients/create-inpatient"
+            element={<CreateInpatient />}
+          />
           <Route path="patients/outpatients" element={<Outpatients />} />
           <Route path="audit-logs" element={<div>Audit Logs Page</div>} />
           <Route path="users" element={<div>Users Page</div>} />

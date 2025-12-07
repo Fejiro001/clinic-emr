@@ -11,6 +11,7 @@ export interface Patient {
   occupation?: string;
   place_of_work?: string;
   tribe_nationality?: string;
+  religion?: string;
   next_of_kin?: string;
   relationship_to_patient?: string;
   address_next_of_kin?: string;
@@ -36,8 +37,8 @@ export interface InpatientRecord {
   final_diagnosis?: string;
   date_of_admission: string;
   date_of_discharge?: string;
-  created_by: string;
-  updated_by: string;
+  created_by?: string;
+  updated_by?: string;
   version: number;
   created_at: string;
   updated_at: string;
@@ -104,9 +105,19 @@ export type UpdatePatient = Partial<{
   occupation: string;
   place_of_work: string;
   tribe_nationality: string;
+  religion: string;
   next_of_kin: string;
   relationship_to_patient: string;
   address_next_of_kin: string;
   updated_by: string;
   version: number;
 }>;
+
+export interface Users {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}

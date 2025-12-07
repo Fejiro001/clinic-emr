@@ -6,6 +6,7 @@ import type {
   InpatientRecord,
   Operation,
   OutpatientVisit,
+  Users,
 } from "../types/supabase";
 import { useAuthStore } from "../store/authStore";
 
@@ -105,7 +106,9 @@ export const patientQueries = {
     const values: unknown[] = [];
 
     if (search) {
-      conditions.push("(surname LIKE ? OR other_names LIKE ? OR phone LIKE ? OR date_of_birth LIKE ?)");
+      conditions.push(
+        "(surname LIKE ? OR other_names LIKE ? OR phone LIKE ? OR date_of_birth LIKE ?)"
+      );
       const term = `%${search}%`;
       values.push(term, term, term, term);
     }
@@ -154,7 +157,9 @@ export const patientQueries = {
     const values: unknown[] = [];
 
     if (filters?.search) {
-      conditions.push("(surname LIKE ? OR other_names LIKE ? OR phone LIKE ? OR date_of_birth LIKE ?)");
+      conditions.push(
+        "(surname LIKE ? OR other_names LIKE ? OR phone LIKE ? OR date_of_birth LIKE ?)"
+      );
       const term = `%${filters.search}%`;
       values.push(term, term, term, term);
     }
@@ -166,10 +171,13 @@ export const patientQueries = {
 
     const whereClauses = conditions.join(" AND ");
 
-    const result = await window.db.queryOne<{ count: number }>(`
+    const result = await window.db.queryOne<{ count: number }>(
+      `
         SELECT COUNT(*) AS count FROM patients
         WHERE ${whereClauses}
-    `, values);
+    `,
+      values
+    );
     return result?.count ?? 0;
   },
 
@@ -562,5 +570,27 @@ export const dashboardQueries = {
       todayOutpatientVisits,
       dischargesToday,
     };
+  },
+};
+
+// ===========================
+// USER QUERIES
+// ===========================
+export const userQueries = {
+  getAll: async (limit = 50, offset = 0) => {
+    return await window.db.query<Users>(
+      `SELECT * FROM users
+      ORDER BY updated_at DESC
+      LIMIT ? OFFSET ?`,
+      [limit, offset]
+    );
+  },
+
+  getAllDoctors: async () => {
+    return await window.db.query<Users>(
+      `SELECT * FROM users
+      WHERE role = doctor
+      ORDER BY full_name ASC`
+    );
   },
 };

@@ -16,6 +16,7 @@ export const CONFLICT_RULES: Record<string, TableConflictRules> = {
     occupation: "prefer_recent",
     place_of_work: "prefer_recent",
     tribe_nationality: "prefer_recent",
+    religion: "prefer_recent",
     next_of_kin: "prefer_recent",
     relationship_to_patient: "prefer_recent",
     address_next_of_kin: "prefer_recent",
