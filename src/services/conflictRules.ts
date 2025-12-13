@@ -31,6 +31,7 @@ export const CONFLICT_RULES: Record<string, TableConflictRules> = {
     date_of_discharge: "prefer_recent",
   },
   outpatient_visits: {
+    unit_number: "prefer_remote",
     history: "prefer_recent",
     diagnosis: "flag_for_review",
     treatment: "flag_for_review",

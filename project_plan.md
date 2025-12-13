@@ -87,10 +87,10 @@ A cross-platform desktop EMR system for managing patient data across clinic comp
 - [x] Test queue persistence on app close/restart
 - [x] Test batching performance
 
-- [ ] Sync from Supabase to local on startup (new/updated records)
-- [ ] Implement periodic sync (every 30 minutes)
-- [ ] Coordinate sync direction (local → remote, remote → local)
-- [ ] Handle conflicts when pulling from remote
+- [x] Sync from Supabase to local on startup (new/updated records)
+- [x] Implement periodic sync (every 30 minutes)
+- [x] Coordinate sync direction (local → remote, remote → local)
+- [x] Handle conflicts when pulling from remote
 
 ### 1.7 Conflict Detection & Resolution (Week 4)
 

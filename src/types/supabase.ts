@@ -15,7 +15,6 @@ export interface Patient {
   next_of_kin?: string;
   relationship_to_patient?: string;
   address_next_of_kin?: string;
-  unit_number: string;
   created_by: string;
   updated_by: string;
   version: number;
@@ -29,7 +28,7 @@ export interface InpatientRecord {
   id: string;
   patient_id: string;
   related_outpatient_visit_id?: string;
-  unit_number?: string;
+  unit_number: string;
   ward: string;
   consultant_id?: string;
   code_no?: string;
@@ -64,6 +63,7 @@ export interface Operation {
 
 export interface OutpatientVisit {
   id: string;
+  unit_number: string;
   patient_id: string;
   visit_date: string;
   visit_time: string;

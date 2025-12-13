@@ -42,9 +42,9 @@ function App() {
     };
   }, []);
 
-  // if (!initialized) {
-  //   return <Preloader />;
-  // }
+  if (!initialized) {
+    return <Preloader />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

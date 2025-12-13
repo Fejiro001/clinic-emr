@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS patients (
     id TEXT PRIMARY KEY,
-    unit_number TEXT,
     surname TEXT NOT NULL,
     other_names TEXT NOT NULL,
     date_of_birth TEXT NOT NULL,
