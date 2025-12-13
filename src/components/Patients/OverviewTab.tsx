@@ -76,7 +76,7 @@ const OverviewTab = ({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 capitalize">
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {quickStats.map((stats) => (
@@ -97,7 +97,7 @@ const OverviewTab = ({
           <h3 className="tab_sections_titles">Personal Information</h3>
           <dl className="space-y-3 text-sm">
             {information.slice(0, 6).map((info) => (
-              <div className="flex justify-between">
+              <div key={info.label} className="flex justify-between">
                 <dt className="text-gray-600">{info.label}</dt>
                 <dd className="font-medium text-gray-900">{info.value}</dd>
               </div>
@@ -110,7 +110,7 @@ const OverviewTab = ({
           <h3 className="tab_sections_titles">Emergency Contact</h3>
           <dl className="space-y-3 text-sm">
             {information.slice(6).map((info) => (
-              <div className="flex justify-between">
+              <div key={info.label} className="flex justify-between">
                 <dt className="text-gray-600">{info.label}</dt>
                 <dd className="font-medium text-gray-900">{info.value}</dd>
               </div>

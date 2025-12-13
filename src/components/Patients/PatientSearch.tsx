@@ -76,7 +76,7 @@ const PatientSearch = ({
             {existingPatient.other_names}
           </p>
           <p className="text-green-700 text-sm mt-1">
-            Unit No.: {existingPatient.unit_number} | Phone: {existingPatient.phone}
+            Phone: {existingPatient.phone}
           </p>
         </div>
       )}

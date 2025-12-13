@@ -131,7 +131,7 @@ const usePagination = <T>({
     try {
       setLoading(true);
       setError(null);
-      
+
       const filters = { search, gender, ward, sortBy, sortOrder };
 
       const [items, count] = await Promise.all([
@@ -162,7 +162,7 @@ const usePagination = <T>({
     setPageSize,
     refresh,
     page,
-    initialLimit
+    initialLimit,
   };
 };
 

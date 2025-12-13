@@ -244,8 +244,7 @@ const PatientTimeline = ({
                           </div>
                           <div>
                             <span className="font-medium">Unit Number:</span>{" "}
-                            {(event.details as InpatientRecord).unit_number ??
-                              "N/A"}
+                            {(event.details as InpatientRecord).unit_number}
                           </div>
                           <div>
                             <span className="font-medium">Admission Date:</span>{" "}

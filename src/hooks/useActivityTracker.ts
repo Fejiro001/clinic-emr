@@ -35,6 +35,6 @@ const useActivityTracker = () => {
       });
     };
   }, []);
-}
+};
 
 export default useActivityTracker;
