@@ -10,8 +10,10 @@ import { patientQueries, inpatientQueries } from "../../services/queries";
 import { showToast } from "../../utils/toast";
 import type { Patient } from "../../types/supabase";
 import { inpatientAdmissionSchema } from "../../services/validation";
-import { PatientForm, PatientSearch } from "../../components/Patients";
-import { AdmissionForm } from "../../components/Inpatient";
+import { PatientSearch } from "../../components/Patients";
+import { admissionForm } from "../../constants/admissionForm";
+import { EditableField } from "../../components/Form";
+import { patientForm } from "../../constants/patientForm";
 
 export type InpatientAdmissionForm = z.infer<typeof inpatientAdmissionSchema>;
 
@@ -62,6 +64,7 @@ const CreateInpatient = () => {
         setValue("civil_state", patient.civil_state ?? "");
         setValue("occupation", patient.occupation ?? "");
         setValue("place_of_work", patient.place_of_work ?? "");
+        setValue("religion", patient.religion ?? "");
         setValue("tribe_nationality", patient.tribe_nationality ?? "");
         setValue("next_of_kin", patient.next_of_kin ?? "");
         setValue(
@@ -69,7 +72,6 @@ const CreateInpatient = () => {
           patient.relationship_to_patient ?? ""
         );
         setValue("address_next_of_kin", patient.address_next_of_kin ?? "");
-        setValue("unit_number", patient.unit_number);
 
         showToast.success(
           "Patient found! Review and complete admission details."
@@ -93,7 +95,6 @@ const CreateInpatient = () => {
     setUseExisting(false);
     reset({
       date_of_admission: new Date().toISOString().split("T")[0],
-      gender: "male",
     });
   };
 
@@ -106,7 +107,20 @@ const CreateInpatient = () => {
         const newPatientId = nanoid();
         const patientSuccess = await patientQueries.insert({
           id: newPatientId,
-          ...data,
+          surname: data.surname,
+          other_names: data.other_names,
+          date_of_birth: data.date_of_birth,
+          gender: data.gender,
+          phone: data.phone,
+          email: data.email ?? undefined,
+          address: data.address,
+          civil_state: data.civil_state ?? undefined,
+          occupation: data.occupation ?? undefined,
+          place_of_work: data.place_of_work ?? undefined,
+          tribe_nationality: data.tribe_nationality ?? undefined,
+          next_of_kin: data.next_of_kin,
+          relationship_to_patient: data.relationship_to_patient,
+          address_next_of_kin: data.address_next_of_kin,
         });
 
         if (!patientSuccess) {
@@ -165,7 +179,10 @@ const CreateInpatient = () => {
 
         {/* Admission Form */}
         <form
-          onSubmit={void handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleSubmit(onSubmit)(e);
+          }}
           className="rounded-md shadow-sm border border-gray-300 p-6 space-y-6"
         >
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -174,18 +191,41 @@ const CreateInpatient = () => {
           </h2>
 
           {/* Patient Information Section */}
-          <PatientForm
-            useExisting={useExisting}
-            register={register}
-            errors={errors}
-          />
+          <article>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
+              Patient Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {patientForm.map((field) => (
+                <div key={field.label} className={field.className ?? ""}>
+                  <EditableField
+                    field={field}
+                    register={register}
+                    errors={errors}
+                    disabled={useExisting}
+                  />
+                </div>
+              ))}
+            </div>
+          </article>
 
           {/* Admission Details Section */}
-          <AdmissionForm
-            useExisting={useExisting}
-            register={register}
-            errors={errors}
-          />
+          <article>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
+              Admission Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {admissionForm.map((field) => (
+                <div key={field.label} className={field.className ?? ""}>
+                  <EditableField
+                    field={field}
+                    register={register}
+                    errors={errors}
+                  />
+                </div>
+              ))}
+            </div>
+          </article>
 
           {/* Submit Buttons */}
           <div className="flex gap-3 justify-end">

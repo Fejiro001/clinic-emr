@@ -1,70 +1,127 @@
-type InputIds =
-  | "civil_state"
-  | "occupation"
-  | "place_of_work"
-  | "religion"
-  | "tribe_nationality"
-  | "next_of_kin"
-  | "relationship_to_patient"
-  | "address_next_of_kin"
-  | "surname"
-  | "other_names"
-  | "phone"
-  | "email"
-  | "address";
+import type { FieldConfig } from "../components/Form/EditableField";
+import type { patientEditSchema } from "../services/validation";
+import { z } from "zod";
 
-export const patientDetails: {
-  label: string;
-  type: string;
-  inputId: InputIds;
-  placeholder: string;
-}[] = [
+type PatientEditForm = z.infer<typeof patientEditSchema>;
+
+export const patientDetails: FieldConfig<PatientEditForm>[] = [
   {
+    inputType: "input",
+    required: true,
+    label: "Surname",
+    inputId: "surname",
+    placeholder: "Surname",
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Other Names",
+    inputId: "other_names",
+    placeholder: "Other names",
+  },
+  {
+    inputType: "dropdown",
+    required: true,
+    label: "Gender",
+    inputId: "gender",
+    placeholder: "",
+    options: ["male", "female"],
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Date of Birth",
+    inputId: "date_of_birth",
+    placeholder: "",
+    type: "date",
+  },
+  {
+    inputType: "input",
+    required: true,
+    label: "Phone",
+    inputId: "phone",
+    placeholder: "Phone number",
+    type: "tel",
+  },
+  {
+    inputType: "textarea",
+    required: true,
+    label: "Address",
+    inputId: "address",
+    placeholder: "Patient address",
+  },
+  {
+    inputType: "input",
+    required: false,
     label: "Email",
-    type: "text",
     inputId: "email",
     placeholder: "Email (Optional)",
+    type: "email",
   },
   {
+    inputType: "dropdown",
+    required: false,
     label: "Civil State",
-    type: "text",
     inputId: "civil_state",
-    placeholder: "e.g., Single, Married",
+    placeholder: "Civil State (optional)",
+    options: [
+      "single",
+      "married",
+      "divorced",
+      "widowed",
+      "separated",
+      "civil partner",
+      "others",
+    ],
   },
   {
+    inputType: "input",
+    required: false,
     label: "Occupation",
-    type: "text",
     inputId: "occupation",
-    placeholder: "Patient occupation",
+    placeholder: "Occupation (optional)",
   },
   {
+    inputType: "input",
+    required: false,
     label: "Place of Work",
-    type: "text",
     inputId: "place_of_work",
-    placeholder: "Workplace",
+    placeholder: "Place of Work (optional)",
   },
   {
+    inputType: "dropdown",
+    required: false,
     label: "Religion",
-    type: "text",
     inputId: "religion",
-    placeholder: "Religion",
+    placeholder: "Religion (optional)",
+    options: ["none", "christianity", "islam", "others"],
   },
   {
+    inputType: "input",
+    required: false,
     label: "Tribe/Nationality",
-    type: "text",
     inputId: "tribe_nationality",
-    placeholder: "Tribe or nationality",
+    placeholder: "Tribe/Nationality (optional)",
   },
   {
+    inputType: "input",
+    required: true,
     label: "Next of Kin",
-    type: "text",
     inputId: "next_of_kin",
-    placeholder: "Emergency contact name",
+    placeholder: "Next of Kin",
   },
   {
-    label: "Relationship to Patient",
-    type: "text",
+    inputType: "input",
+    required: true,
+    label: "Next of Kin Relationship",
     inputId: "relationship_to_patient",
-    placeholder: "e.g., Spouse, Parent, Sibling",
+    placeholder: "Relationship to Next of Kin",
+  },
+  {
+    inputType: "textarea",
+    required: true,
+    label: "Next of Kin Address",
+    inputId: "address_next_of_kin",
+    placeholder: "Address of Next of Kin",
   },
 ];

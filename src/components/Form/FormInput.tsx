@@ -1,6 +1,6 @@
 import type { Ref } from "react";
 
-interface FormInputProps {
+interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   type?: string;
   placeholder?: string;
@@ -13,9 +13,9 @@ const FormInput = ({
   id,
   type = "text",
   placeholder = "",
-  ref,
   disabled,
   autoComplete,
+  ref,
   ...rest
 }: FormInputProps) => {
   return (
@@ -25,9 +25,9 @@ const FormInput = ({
       id={id}
       type={type}
       placeholder={placeholder}
-      {...rest}
       ref={ref}
       autoComplete={autoComplete}
+      {...rest}
     />
   );
 };

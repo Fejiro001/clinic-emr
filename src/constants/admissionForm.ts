@@ -1,15 +1,7 @@
+import type { FieldConfig } from "../components/Form/EditableField";
 import type { InpatientAdmissionForm } from "../pages/Inpatients/CreateInpatient";
 
-export const admissionForm: {
-  inputType: string;
-  required: boolean;
-  label: string;
-  inputId: keyof InpatientAdmissionForm;
-  placeholder: string;
-  type?: string;
-  options?: string[];
-  className?: string;
-}[] = [
+export const admissionForm: FieldConfig<InpatientAdmissionForm>[] = [
   {
     inputType: "input",
     required: true,
